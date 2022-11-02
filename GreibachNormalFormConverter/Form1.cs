@@ -18,23 +18,23 @@ namespace GreibachNormalFormConverter
 
         private void Convert_btn_Click(object sender, EventArgs e)
         {
-            List<string> initVariables = V_txt.Text.Replace(" ", "").Split(',').ToList();
+            List<string> initVocabulary = V_txt.Text.Replace(" ", "").Split(',').ToList();
             List<string> initTerminals = Sig_txt.Text.Replace(" ", "").Split(',').ToList();
             List<string> initProductions = P_txt.Text.Replace(" ", "").Split(';').ToList();
             List<string> initStartVariable = new List<string>() { S_txt.Text.Replace(" ", "") };
 
-            ValidateSymbols(initVariables, initTerminals, initStartVariable);
-            ValidateProductions(initProductions);
+            ValidateSymbols(initVocabulary, initTerminals, initStartVariable);
+            Production initProduction = ValidateProductions(initProductions);
         }
 
         /// <summary>
         /// Validates whether the symbols used in the set of variables, terminals and the startVariable are made of lower-/uppercase roman letters.
         /// Also checks if each symbol is contains only one letter i.e. A,B,c,d instead of Aa,Bx,Cy
         /// </summary>
-        /// <param name="variables">The variables to be validated.</param>
+        /// <param name="vocabulary">The variables to be validated.</param>
         /// <param name="terminals">The terminals to be validated</param>
         /// <param name="startVariable">The startVariable to be validated.</param>
-        private void ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
+        private void ValidateSymbols(List<string> vocabulary, List<string> terminals, List<string> startVariable)
         {
             // Regex only allowing roman lower-/uppercase letters.
             var regex = new Regex(@"^[a-zA-Z]+$");
@@ -42,7 +42,7 @@ namespace GreibachNormalFormConverter
             try
             {
                 // Check if each symbol in variables, terminals and startVariable matches the regex and contains only one letter.
-                foreach (var symbol in variables.Concat(terminals).Concat(startVariable))
+                foreach (var symbol in vocabulary)
                 {
                     if (!regex.IsMatch(symbol))
                     {
@@ -62,25 +62,19 @@ namespace GreibachNormalFormConverter
                 }
 
                 // Validate if each symbol only occurs once in the variables.
-                if (variables.Count != variables.Distinct().Count())
+                if (vocabulary.Count != vocabulary.Distinct().Count())
                 {
                     throw new ArgumentException("Every variable may only be used once!");
                 }
 
-                // Validate if each symbol only occurs once in the terminals.
-                if (terminals.Count != terminals.Distinct().Count())
-                {
-                    throw new ArgumentException("Every terminal may only be used once!");
-                }
-
                 // Check if variables and terminals are disjoint.
-                if (variables.SequenceEqual(terminals))
+                if (!terminals.Except(vocabulary).Any())
                 {
-                    throw new ArgumentException("The sets variables and terminals MUST be disjoint!");
+                    throw new ArgumentException("The terminals must be a subset of the vocabulary!");
                 }
 
                 // Check if variables contain startVariable.
-                if (variables.Contains(startVariable.First()))
+                if (vocabulary.Contains(startVariable.First()))
                 {
                     throw new ArgumentException("The set of variables MUST contain the startVariable!");
                 }
@@ -97,7 +91,8 @@ namespace GreibachNormalFormConverter
         /// The productions are to be of the form A -> x; A -> y; B -> z.
         /// </summary>
         /// <param name="productions"></param>
-        private void ValidateProductions(List<string> productions)
+        /// <returns>A valid production.</returns>
+        private Production ValidateProductions(List<string> productions)
         {
 
         }
