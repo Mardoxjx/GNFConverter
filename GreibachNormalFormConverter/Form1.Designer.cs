@@ -107,9 +107,9 @@
             this.S_lable.AutoSize = true;
             this.S_lable.Location = new System.Drawing.Point(13, 347);
             this.S_lable.Name = "S_lable";
-            this.S_lable.Size = new System.Drawing.Size(127, 25);
+            this.S_lable.Size = new System.Drawing.Size(122, 25);
             this.S_lable.TabIndex = 7;
-            this.S_lable.Text = "S = {             }";
+            this.S_lable.Text = "S = {            }";
             // 
             // Convert_btn
             // 
