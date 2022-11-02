@@ -44,14 +44,14 @@ namespace GreibachNormalFormConverter
                 // Check if each symbol in variables, terminals and startVariable matches the regex and contains only one letter.
                 foreach (var symbol in vocabulary)
                 {
-                    if (!regex.IsMatch(symbol))
-                    {
-                        throw new ArgumentException("The used symbols are not valid charactes, please only use upper and lowercase characters of the roman alphabet!");
-                    }
-
                     if (symbol.Length != 1)
                     {
                         throw new ArgumentException("Every symbol should only contain a single character!");
+                    }
+
+                    if (!regex.IsMatch(symbol))
+                    {
+                        throw new ArgumentException("The used symbols are not valid charactes, please only use upper and lowercase characters of the roman alphabet!");
                     }
                 }
 
