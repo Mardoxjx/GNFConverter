@@ -27,7 +27,6 @@ namespace GreibachNormalFormConverter
             List<string> initProductions = P_txt.Text.Replace(" ", "").Split(';').ToList();
             List<string> initStartVariable = new List<string>() { S_txt.Text.Replace(" ", "") };
 
-
             ValidateSymbols(initVariables, initTerminals, initStartVariable);
         }
 
