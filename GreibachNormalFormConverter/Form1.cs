@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GreibachNormalFormConverter
@@ -28,6 +23,7 @@ namespace GreibachNormalFormConverter
             List<string> initStartVariable = new List<string>() { S_txt.Text.Replace(" ", "") };
 
             ValidateSymbols(initVariables, initTerminals, initStartVariable);
+            ValidateProductions(initProductions);
         }
 
         /// <summary>
