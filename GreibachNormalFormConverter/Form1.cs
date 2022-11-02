@@ -13,6 +13,7 @@ namespace GreibachNormalFormConverter
             InitializeComponent();
             P_tooltip.ShowAlways = true;
             P_tooltip.SetToolTip(this.P_txt, "Please seperate Productions with ';'!");
+            P_txt.Text = "Please note productions like the following: A -> x; A -> y; B -> z";
         }
 
         private void Convert_btn_Click(object sender, EventArgs e)
@@ -94,6 +95,22 @@ namespace GreibachNormalFormConverter
         private void ValidateProductions(List<string> productions)
         {
 
+        }
+
+        private void P_txt_Enter(object sender, EventArgs e)
+        {
+            if (P_txt.Text == "Please note productions like the following: A -> x; A -> y; B -> z")
+            {
+                P_txt.Text = "";
+            }
+        }
+
+        private void P_txt_Leave(object sender, EventArgs e)
+        {
+            if (P_txt.Text.Trim() == "")
+            {
+                P_txt.Text = "Please note productions like the following: A -> x; A -> y; B -> z";
+            }
         }
     }
 }

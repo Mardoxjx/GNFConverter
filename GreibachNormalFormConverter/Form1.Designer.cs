@@ -90,6 +90,8 @@
             this.P_txt.Name = "P_txt";
             this.P_txt.Size = new System.Drawing.Size(300, 160);
             this.P_txt.TabIndex = 6;
+            this.P_txt.Enter += new System.EventHandler(this.P_txt_Enter);
+            this.P_txt.Leave += new System.EventHandler(this.P_txt_Leave);
             // 
             // P_lable
             // 
