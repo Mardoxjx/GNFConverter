@@ -92,11 +92,17 @@ namespace GreibachNormalFormConverter
 
         }
 
+        /// <summary>
+        /// Validates the productions of the grammar.
+        /// The productions are to be of the form A -> x; A -> y; B -> z.
+        /// </summary>
+        /// <param name="productions"></param>
         private void ValidateProductions(List<string> productions)
         {
 
         }
 
+        // Add placeholder in productions.
         private void P_txt_Enter(object sender, EventArgs e)
         {
             if (P_txt.Text == "Please note productions like the following: A -> x; A -> y; B -> z")
@@ -105,6 +111,7 @@ namespace GreibachNormalFormConverter
             }
         }
 
+        // Remove placeholder in productions.
         private void P_txt_Leave(object sender, EventArgs e)
         {
             if (P_txt.Text.Trim() == "")
