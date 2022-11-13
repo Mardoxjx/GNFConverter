@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="exp_lable.Text" xml:space="preserve">
-    <value>Please enter a valid context-free Grammer G=(V,Σ,P,S) where V is a set of Symbols called total Vocabulary, Σ is a subset of the total Vocabulary called terminal Symbols, P is a set of productions and S is the start variable (Please seperate Symbols with commas and productions with semicolons!):
+    <value>Please enter a valid context-free Grammer G=(V,Σ,P,S) where V is a set of Symbols called Variables, Σ is a subset of the total Vocabulary called terminal Symbols, P is a set of productions and S is the start variable (Please seperate Symbols with commas and productions with semicolons!):
 
 </value>
   </data>
