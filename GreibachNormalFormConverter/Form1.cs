@@ -26,7 +26,8 @@ namespace GreibachNormalFormConverter
             ValidateSymbols(initVariables, initTerminals, initStartVariable);
             Production initProduction = ValidateProductions(initProductions, initVariables, initTerminals);
             Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
-            CreateNewProductions(initGrammar);
+
+            var newProductions = CreateNewProductions(initGrammar);
         }
 
         /// <summary>
@@ -101,7 +102,7 @@ namespace GreibachNormalFormConverter
             var leftSideList = new List<string>();
             var rightSideList = new List<string>();
 
-            //split production rules into left and right sides.
+            // Split production rules into left and right sides.
             foreach (var rule in productions)
             {
                 var splitRule = rule.Split(new string[] { "->" }, StringSplitOptions.None);
@@ -109,7 +110,7 @@ namespace GreibachNormalFormConverter
                 rightSideList.Add(splitRule[1]);
             }
 
-            //check if each left side symbol is in fact a variable.
+            // Check if each left side symbol is in fact a variable.
             foreach (var leftSideSymbol in leftSideList)
             {
                 if (!variables.Contains(leftSideSymbol))
@@ -118,7 +119,7 @@ namespace GreibachNormalFormConverter
                 }
             }
 
-            //check if each rightSideSymbol is contained in the variable and/or terminal set.
+            // Check if each rightSideSymbol is contained in the variable and/or terminal set.
             foreach (var rightSide in rightSideList)
             {
                 foreach (var symbol in rightSide)
@@ -135,17 +136,18 @@ namespace GreibachNormalFormConverter
 
         private Production CreateNewProductions(Grammar initGrammar)
         {
-            // group existing rules after left side.
+            // Group existing rules after left side.
             ILookup<string, Tuple<string, string>> groupedRules = initGrammar.Production.Derivations.ToLookup(r => r.Item1);
             var newRuleList = new List<List<string>>();
+            var newVariables = new List<string>();
 
-            // iterate through each grouping to create new rules for each variable.
+            // Iterate through each grouping to create new rules for each variable.
             foreach (var grouping in groupedRules)
             {
                 var key = grouping.Key.ToString();
                 var newRules = new List<string>();
 
-                // create new rules from each existing rule.
+                // Create new rules from each existing rule.
                 foreach (var rule in initGrammar.Production.Derivations)
                 {
                     if (rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
@@ -154,13 +156,15 @@ namespace GreibachNormalFormConverter
                         var newRightSide = rule.Item2.Last() + rule.Item1 + "_" + key;
 
                         var newRule = newLeftSide + "->" + newRightSide;
-
                         newRules.Add(newRule);
                     }
                 }
 
                 newRuleList.Add(newRules);
             }
+
+            // Add new variables to original ones.
+            initGrammar.Variables.AddRange(newVariables);
 
             return initGrammar.Production;
         }
