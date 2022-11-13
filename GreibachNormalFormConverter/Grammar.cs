@@ -4,14 +4,14 @@ namespace GreibachNormalFormConverter
 {
     public class Grammar
     {
-        public List<string> Vocabulary { get; set; }
+        public List<string> Variables { get; set; }
         public List<string> Terminals { get; set; }
         public Production Production { get; set; }
         public List<string> Startvariable { get; set; }
 
-        public Grammar(List<string> vocabulary, List<string> terminals, Production production, List<string> startvariable)
+        public Grammar(List<string> variables, List<string> terminals, Production production, List<string> startvariable)
         {
-            Vocabulary = vocabulary;
+            Variables = variables;
             Terminals = terminals;
             Production = production;
             Startvariable = startvariable;

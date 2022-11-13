@@ -25,6 +25,8 @@ namespace GreibachNormalFormConverter
 
             ValidateSymbols(initVariables, initTerminals, initStartVariable);
             Production initProduction = ValidateProductions(initProductions, initVariables, initTerminals);
+            Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
+            CreateNewProductions(initGrammar);
         }
 
         /// <summary>
@@ -88,9 +90,11 @@ namespace GreibachNormalFormConverter
 
         /// <summary>
         /// Validates the productions of the grammar.
-        /// The productions are to be of the form A -> x; A -> y; B -> z.
+        /// The productions are to be of the form A -> x;A -> y;B -> z.
         /// </summary>
-        /// <param name="productions"></param>
+        /// <param name="productions">The productions to be validated.</param>
+        /// <param name="variables">The set of variables which is used for validation of the productions.</param>
+        /// <param name="terminals">The set of terminals which is used for validation of the productions.</param>
         /// <returns>A valid production.</returns>
         private Production ValidateProductions(List<string> productions, List<string> variables, List<string> terminals)
         {
@@ -100,7 +104,7 @@ namespace GreibachNormalFormConverter
             //split production rules into left and right sides.
             foreach (var rule in productions)
             {
-                var splitRule = rule.Split(new string[] {"->"}, StringSplitOptions.None);
+                var splitRule = rule.Split(new string[] { "->" }, StringSplitOptions.None);
                 leftSideList.Add(splitRule[0]);
                 rightSideList.Add(splitRule[1]);
             }
@@ -119,7 +123,7 @@ namespace GreibachNormalFormConverter
             {
                 foreach (var symbol in rightSide)
                 {
-                    if (!(variables.Contains(rightSide) || terminals.Contains(rightSide)))
+                    if (!(rightSide.All(x => variables.Contains(x.ToString())) || rightSide.All(x => terminals.Contains(x.ToString()))))
                     {
                         throw new ArgumentException("The right side of each production MUST only contain variables and/or terminals");
                     }
@@ -127,6 +131,38 @@ namespace GreibachNormalFormConverter
             }
 
             return new Production(productions);
+        }
+
+        private Production CreateNewProductions(Grammar initGrammar)
+        {
+            // group existing rules after left side.
+            ILookup<string, Tuple<string, string>> groupedRules = initGrammar.Production.Derivations.ToLookup(r => r.Item1);
+            var newRuleList = new List<List<string>>();
+
+            // iterate through each grouping to create new rules.
+            foreach (var grouping in groupedRules)
+            {
+                var key = grouping.Key.ToString();
+                var newRules = new List<string>();
+
+                // create new rules from each existing rule.
+                foreach (var rule in initGrammar.Production.Derivations)
+                {
+                    if (rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
+                    {
+                        var newLeftSide = rule.Item2.First() + "_" + key;
+                        var newRightSide = rule.Item2.Last() + rule.Item1 + "_" + key;
+
+                        var newRule = newLeftSide + "->" + newRightSide;
+
+                        newRules.Add(newRule);
+                    }
+                }
+
+                newRuleList.Add(newRules);
+            }
+
+            return initGrammar.Production;
         }
 
         // Add placeholder in productions.
