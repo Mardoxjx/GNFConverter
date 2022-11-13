@@ -139,7 +139,7 @@ namespace GreibachNormalFormConverter
             ILookup<string, Tuple<string, string>> groupedRules = initGrammar.Production.Derivations.ToLookup(r => r.Item1);
             var newRuleList = new List<List<string>>();
 
-            // iterate through each grouping to create new rules.
+            // iterate through each grouping to create new rules for each variable.
             foreach (var grouping in groupedRules)
             {
                 var key = grouping.Key.ToString();
