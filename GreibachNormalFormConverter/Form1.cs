@@ -284,6 +284,10 @@ namespace GreibachNormalFormConverter
             secondRightSymbols = secondRightSymbols.Distinct().ToList();
             leftSymbols = leftSymbols.Distinct().ToList();
 
+            // Exclude startVariable as it never occurs on the right. This behavior is intended and the derivations of the startVariable must not be removed.
+            leftSymbols.Remove("S");
+
+            // Remove derivations where the left side never occurs on any right side, thus being useless.
             foreach (var symbol in leftSymbols)
             {
                 if (!(firstRightSymbols.Any(x => x == symbol) || secondRightSymbols.Any(y => y == symbol)))
