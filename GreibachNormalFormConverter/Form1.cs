@@ -134,7 +134,7 @@ namespace GreibachNormalFormConverter
             return new Production(productions);
         }
 
-        private Production CreateNewProductions(Grammar initGrammar)
+        private List<Production> CreateNewProductions(Grammar initGrammar)
         {
             // Group existing rules after left side.
             ILookup<string, Tuple<string, string>> groupedRules = initGrammar.Production.Derivations.ToLookup(r => r.Item1);
@@ -150,12 +150,47 @@ namespace GreibachNormalFormConverter
                 // Create new rules from each existing rule.
                 foreach (var rule in initGrammar.Production.Derivations)
                 {
+                    // Every rule A -> BC creates new rule B_X -> CA_X.
                     if (rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
                     {
                         var newLeftSide = rule.Item2.First() + "_" + key;
                         var newRightSide = rule.Item2.Last() + rule.Item1 + "_" + key;
 
+                        newVariables.Add(newLeftSide);
+                        newVariables.Add(newRightSide.Substring(1));
+
                         var newRule = newLeftSide + "->" + newRightSide;
+                        newRules.Add(newRule);
+                    }
+
+                    // Every rule X -> BC also creates new rule B_X -> C.
+                    if (rule.Item1 == key && rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
+                    {
+                        var newLeftSide = rule.Item2.First() + "_" + key;
+                        var newRightSide = rule.Item2.Last();
+
+                        newVariables.Add(newLeftSide);
+
+                        var newRule = newLeftSide + "->" + newRightSide;
+                        newRules.Add(newRule);
+                    }
+
+                    // Every rule A -> a creates new rule X -> aA_X.
+                    if (rule.Item2.Length == 1 && rule.Item2.All(x => initGrammar.Terminals.Contains(x.ToString())))
+                    {
+                        var newLeftSide = key;
+                        var newRightSide = rule.Item2 + rule.Item1 + "_" + key;
+
+                        newVariables.Add(newRightSide.Substring(1));
+
+                        var newRule = newLeftSide + "->" + newRightSide;
+                        newRules.Add(newRule);
+                    }
+
+                    // Every rule X -> a is added to the new set of productions.
+                    if (rule.Item1 == key && rule.Item2.Length == 1 && rule.Item2.All(x => initGrammar.Terminals.Contains(x.ToString())))
+                    {
+                        var newRule = rule.Item1 + "->" + rule.Item2;
                         newRules.Add(newRule);
                     }
                 }
@@ -166,7 +201,16 @@ namespace GreibachNormalFormConverter
             // Add new variables to original ones.
             initGrammar.Variables.AddRange(newVariables);
 
-            return initGrammar.Production;
+            var newProductionsList = new List<Production>();
+
+            // Create new List of Productions P_X from the new Rules.
+            foreach (var newRules in newRuleList)
+            {
+                var newProduction = new Production(newRules);
+                newProductionsList.Add(newProduction);
+            }
+
+            return newProductionsList;
         }
 
         // Add placeholder in productions.
