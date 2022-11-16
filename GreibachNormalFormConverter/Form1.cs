@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -28,8 +29,10 @@ namespace GreibachNormalFormConverter
             Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
 
             var newProductions = CreateNewProductions(initGrammar);
+            CleanNewProductions(newProductions);
+
             // TODO: Clean Prodcutions.
-            // TODO: Cogging of changes.
+            // TODO: Logging of changes.
             // TODO: Create new grammar in GNF.
             MessageBox.Show("hi");
         }
@@ -48,7 +51,11 @@ namespace GreibachNormalFormConverter
 
             try
             {
-                // TODO: Errorhandling for empty fields.
+                // Check if variables/terminals/startvariable are empty.
+                if (!(variables.Any() && terminals.Any() && startVariable.Any()))
+                {
+                    throw new ArgumentException("The Variables/Terminals/Startvariable MUST not be empty!");
+                }
 
                 // Check if each symbol in variables, terminals and startVariable matches the regex and contains only one letter.
                 foreach (var symbol in variables.Concat(terminals).Concat(startVariable))
@@ -108,40 +115,62 @@ namespace GreibachNormalFormConverter
             var leftSideList = new List<string>();
             var rightSideList = new List<string>();
 
-            // Split production rules into left and right sides.
-            foreach (var rule in productions)
-            {
-                var splitRule = rule.Split(new string[] { "->" }, StringSplitOptions.None);
-                leftSideList.Add(splitRule[0]);
-                rightSideList.Add(splitRule[1]);
-            }
+            // TODO: check if all symbols of production are in variables U terminals.
 
-            // TODO: Errorhandling for empty fields.
-
-            // Check if each left side symbol is in fact a variable.
-            foreach (var leftSideSymbol in leftSideList)
+            try
             {
-                if (!variables.Contains(leftSideSymbol))
+                // Check if productions are empty.
+                if (!productions.Any())
                 {
-                    throw new ArgumentException("The left side of each production MUST be a variable. The given grammar is not context-free!");
+                    throw new ArgumentException("The productions MUST not be empty!");
                 }
-            }
 
-            // Check if each rightSideSymbol is contained in the variable and/or terminal set.
-            foreach (var rightSide in rightSideList)
-            {
-                foreach (var symbol in rightSide)
+                // Split production rules into left and right sides.
+                foreach (var rule in productions)
                 {
-                    if (!(rightSide.All(x => variables.Contains(x.ToString())) || rightSide.All(x => terminals.Contains(x.ToString()))))
+                    var splitRule = rule.Split(new string[] { "->" }, StringSplitOptions.None);
+                    leftSideList.Add(splitRule[0]);
+                    rightSideList.Add(splitRule[1]);
+                }
+
+                // Check if each left side symbol is in fact a variable.
+                foreach (var leftSideSymbol in leftSideList)
+                {
+                    if (!variables.Contains(leftSideSymbol))
                     {
-                        throw new ArgumentException("The right side of each production MUST only contain variables and/or terminals");
+                        throw new ArgumentException("The left side of each production MUST be a variable. The given grammar is not context-free!");
                     }
                 }
+
+                // Check if each rightSideSymbol is contained in the variable and/or terminal set.
+                foreach (var rightSide in rightSideList)
+                {
+                    foreach (var symbol in rightSide)
+                    {
+                        if (!(rightSide.All(x => variables.Contains(x.ToString())) || rightSide.All(x => terminals.Contains(x.ToString()))))
+                        {
+                            throw new ArgumentException("The right side of each production MUST only contain variables and/or terminals");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
 
             return new Production(productions);
         }
 
+        /// <summary>
+        /// Creates new Productions after the following rules:
+        ///     1. Every rule A -> BC creates new rule B_X -> CA_X.
+        ///     2. Every rule X -> BC also creates new rule B_X -> C.
+        ///     3. Every rule A -> a creates new rule X -> aA_X.
+        ///     4. Every rule X -> a is added to the new set of productions.
+        /// </summary>
+        /// <param name="initGrammar">The initial grammar which new productions are going to be created for.</param>
+        /// <returns>A list of new Productions P_X.</returns>
         private List<Production> CreateNewProductions(Grammar initGrammar)
         {
             // Group existing rules after left side.
@@ -232,6 +261,41 @@ namespace GreibachNormalFormConverter
             }
 
             return newProductionsList;
+        }
+
+        private void CleanNewProductions(List<Production> newProductions)
+        {
+            var firstRightSymbols = new List<string>();
+            var secondRightSymbols = new List<string>();
+            var leftSymbols = new List<string>();
+
+            // Split each derivation in each production into left side and the first and second part of the right side.
+            foreach (var production in newProductions)
+            {
+                foreach (var derivation in production.Derivations)
+                {
+                    firstRightSymbols.Add(derivation.Item2.Substring(0,1));
+                    secondRightSymbols.Add(derivation.Item2.Substring(1));
+                    leftSymbols.Add(derivation.Item1);
+                }
+            }
+
+            firstRightSymbols = firstRightSymbols.Distinct().ToList();
+            secondRightSymbols = secondRightSymbols.Distinct().ToList();
+            leftSymbols = leftSymbols.Distinct().ToList();
+
+            foreach (var symbol in leftSymbols)
+            {
+                if (!(firstRightSymbols.Any(x => x == symbol) || secondRightSymbols.Any(y => y == symbol)))
+                {
+                    foreach (var production in newProductions)
+                    {
+                        production.Derivations.RemoveAll(x => x.Item1.StartsWith(symbol));
+                    }
+                }
+            }
+
+            MessageBox.Show("HI");
         }
 
         // Add placeholder in productions.
