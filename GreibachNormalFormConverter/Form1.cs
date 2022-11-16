@@ -28,6 +28,7 @@ namespace GreibachNormalFormConverter
             Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
 
             var newProductions = CreateNewProductions(initGrammar);
+            MessageBox.Show("hi");
         }
 
         /// <summary>
@@ -156,8 +157,16 @@ namespace GreibachNormalFormConverter
                         var newLeftSide = rule.Item2.First() + "_" + key;
                         var newRightSide = rule.Item2.Last() + rule.Item1 + "_" + key;
 
-                        newVariables.Add(newLeftSide);
-                        newVariables.Add(newRightSide.Substring(1));
+                        if (!newVariables.Contains(newLeftSide))
+                        {
+                            newVariables.Add(newLeftSide);
+                        }
+                        
+                        if (!newVariables.Contains(newRightSide.Substring(1)))
+                        {
+                            newVariables.Add(newRightSide.Substring(1));
+                        }
+                        
 
                         var newRule = newLeftSide + "->" + newRightSide;
                         newRules.Add(newRule);
@@ -169,7 +178,10 @@ namespace GreibachNormalFormConverter
                         var newLeftSide = rule.Item2.First() + "_" + key;
                         var newRightSide = rule.Item2.Last();
 
-                        newVariables.Add(newLeftSide);
+                        if (!newVariables.Contains(newLeftSide))
+                        {
+                            newVariables.Add(newLeftSide);
+                        }
 
                         var newRule = newLeftSide + "->" + newRightSide;
                         newRules.Add(newRule);
@@ -181,7 +193,10 @@ namespace GreibachNormalFormConverter
                         var newLeftSide = key;
                         var newRightSide = rule.Item2 + rule.Item1 + "_" + key;
 
-                        newVariables.Add(newRightSide.Substring(1));
+                        if (!newVariables.Contains(newRightSide.Substring(1)))
+                        {
+                            newVariables.Add(newRightSide.Substring(1));
+                        }
 
                         var newRule = newLeftSide + "->" + newRightSide;
                         newRules.Add(newRule);
