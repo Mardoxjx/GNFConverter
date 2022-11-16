@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -197,7 +196,7 @@ namespace GreibachNormalFormConverter
                         {
                             newVariables.Add(newLeftSide);
                         }
-                        
+
                         if (!newVariables.Contains(newRightSide.Substring(1)))
                         {
                             newVariables.Add(newRightSide.Substring(1));
@@ -274,7 +273,7 @@ namespace GreibachNormalFormConverter
             {
                 foreach (var derivation in production.Derivations)
                 {
-                    firstRightSymbols.Add(derivation.Item2.Substring(0,1));
+                    firstRightSymbols.Add(derivation.Item2.Substring(0, 1));
                     secondRightSymbols.Add(derivation.Item2.Substring(1));
                     leftSymbols.Add(derivation.Item1);
                 }
