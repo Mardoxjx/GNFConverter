@@ -28,6 +28,9 @@ namespace GreibachNormalFormConverter
             Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
 
             var newProductions = CreateNewProductions(initGrammar);
+            // TODO: Clean Prodcutions.
+            // TODO: Cogging of changes.
+            // TODO: Create new grammar in GNF.
             MessageBox.Show("hi");
         }
 
@@ -45,6 +48,8 @@ namespace GreibachNormalFormConverter
 
             try
             {
+                // TODO: Errorhandling for empty fields.
+
                 // Check if each symbol in variables, terminals and startVariable matches the regex and contains only one letter.
                 foreach (var symbol in variables.Concat(terminals).Concat(startVariable))
                 {
@@ -65,6 +70,12 @@ namespace GreibachNormalFormConverter
                     throw new ArgumentException("You may only specify a single startVariable!");
                 }
 
+                // Check if variables contain startVariable.
+                if (!variables.Contains(startVariable.First()))
+                {
+                    throw new ArgumentException("The set of variables MUST contain the startVariable!");
+                }
+
                 // Validate if each symbol only occurs once in the variables.
                 if (variables.Count != variables.Distinct().Count())
                 {
@@ -75,12 +86,6 @@ namespace GreibachNormalFormConverter
                 if (variables.SequenceEqual(terminals))
                 {
                     throw new ArgumentException("The sets variables and terminals MUST be disjoint!");
-                }
-
-                // Check if variables contain startVariable.
-                if (!variables.Contains(startVariable.First()))
-                {
-                    throw new ArgumentException("The set of variables MUST contain the startVariable!");
                 }
             }
             catch (Exception ex)
@@ -110,6 +115,8 @@ namespace GreibachNormalFormConverter
                 leftSideList.Add(splitRule[0]);
                 rightSideList.Add(splitRule[1]);
             }
+
+            // TODO: Errorhandling for empty fields.
 
             // Check if each left side symbol is in fact a variable.
             foreach (var leftSideSymbol in leftSideList)
@@ -166,7 +173,6 @@ namespace GreibachNormalFormConverter
                         {
                             newVariables.Add(newRightSide.Substring(1));
                         }
-                        
 
                         var newRule = newLeftSide + "->" + newRightSide;
                         newRules.Add(newRule);
