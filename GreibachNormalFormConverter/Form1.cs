@@ -28,7 +28,7 @@ namespace GreibachNormalFormConverter
             Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
 
             var newProductions = CreateNewProductions(initGrammar);
-            CleanNewProductions(newProductions);
+            CleanNewProductions(newProductions, initGrammar);
 
             // TODO: Clean Prodcutions.
             // TODO: Logging of changes.
@@ -262,7 +262,12 @@ namespace GreibachNormalFormConverter
             return newProductionsList;
         }
 
-        private void CleanNewProductions(List<Production> newProductions)
+        /// <summary>
+        /// Cleans the production by removing useless rules. Variables that are useless after the removal of said rules will also be removed from the set of variables in the initial grammar.
+        /// </summary>
+        /// <param name="newProductions">The newly created productions to be cleaned.</param>
+        /// <param name="initGrammar">The inital grammar whose variables may be altered.</param>
+        private void CleanNewProductions(List<Production> newProductions, Grammar initGrammar)
         {
             var firstRightSymbols = new List<string>();
             var secondRightSymbols = new List<string>();
@@ -289,16 +294,25 @@ namespace GreibachNormalFormConverter
             // Remove derivations where the left side never occurs on any right side, thus being useless.
             foreach (var symbol in leftSymbols)
             {
-                if (!(firstRightSymbols.Any(x => x == symbol) || secondRightSymbols.Any(y => y == symbol)))
+                if (firstRightSymbols.All(x => x != symbol) && secondRightSymbols.All(y => y != symbol))
                 {
                     foreach (var production in newProductions)
                     {
-                        production.Derivations.RemoveAll(x => x.Item1.StartsWith(symbol));
+                        production.Derivations.RemoveAll(x => x.Item1 == symbol);
                     }
+
+                    initGrammar.Variables.Remove(symbol);
                 }
             }
 
-            MessageBox.Show("HI");
+            // Remove derivations where the right side never occurs on any left side, thus being useless.
+            // The variables in question are the newly created startVariables S_X.
+            foreach (var production in newProductions)
+            {
+                production.Derivations.RemoveAll(x => x.Item2.Contains("S_"));
+            }
+
+            initGrammar.Variables.RemoveAll(x => x.Contains("S_"));
         }
 
         // Add placeholder in productions.
