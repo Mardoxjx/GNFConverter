@@ -30,7 +30,7 @@ namespace GreibachNormalFormConverter
             var newProductions = CreateNewProductions(initGrammar);
             CleanNewProductions(newProductions, initGrammar);
 
-            // TODO: Clean Prodcutions.
+            // TODO: Implement substitution of varialbes in productions.
             // TODO: Logging of changes.
             // TODO: Create new grammar in GNF.
             MessageBox.Show("hi");
