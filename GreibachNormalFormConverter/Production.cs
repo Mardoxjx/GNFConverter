@@ -7,15 +7,13 @@ namespace GreibachNormalFormConverter
     {
         public List<Tuple<string, string>> Derivations { get; set; }
 
-        public Production(List<string> derivations)
+        public Production(List<Tuple<string, string>> derivations)
         {
             var derivationList = new List<Tuple<string, string>>();
 
             foreach (var item in derivations)
             {
-                var splitItem = item.Split(new string[] { "->" }, StringSplitOptions.None);
-                var tuple = new Tuple<string, string>(splitItem[0], splitItem[1]);
-                derivationList.Add(tuple);
+                derivationList.Add(item);
             }
 
             this.Derivations = derivationList;

@@ -34,11 +34,12 @@ namespace GreibachNormalFormConverter
             CleanNewProductions(newProductions, initGrammar);
 
             // Substitute new productions to bring them into GNF.
-            SubstituteDerivations(newProductions, initGrammar);
+            var completeProduction = SubstituteDerivations(newProductions, initGrammar);
 
-            // TODO: Implement substitution of varialbes in productions.
+            // Create new grammar in GNF with completed productions.
+            var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
+
             // TODO: Logging of changes.
-            // TODO: Create new grammar in GNF.
             MessageBox.Show("hi");
         }
 
@@ -119,6 +120,7 @@ namespace GreibachNormalFormConverter
         {
             var leftSideList = new List<string>();
             var rightSideList = new List<string>();
+            var tupleList = new List<Tuple<string, string>>();
 
             // TODO: check if all symbols of production are in variables U terminals.
 
@@ -136,6 +138,7 @@ namespace GreibachNormalFormConverter
                     var splitRule = rule.Split(new string[] { "->" }, StringSplitOptions.None);
                     leftSideList.Add(splitRule[0]);
                     rightSideList.Add(splitRule[1]);
+                    tupleList.Add(new Tuple<string, string>(splitRule[0], splitRule[1]));
                 }
 
                 // Check if each left side symbol is in fact a variable.
@@ -164,7 +167,7 @@ namespace GreibachNormalFormConverter
                 MessageBox.Show(ex.Message);
             }
 
-            return new Production(productions);
+            return new Production(tupleList);
         }
 
         /// <summary>
@@ -261,7 +264,15 @@ namespace GreibachNormalFormConverter
             // Create new List of Productions P_X from the new Rules.
             foreach (var newRules in newRuleList)
             {
-                var newProduction = new Production(newRules);
+                var tupleList = new List<Tuple<string, string>>();
+                foreach (var rule in newRules)
+                {
+                    var splitItem = rule.Split(new string[] { "->" }, StringSplitOptions.None);
+                    var tuple = new Tuple<string, string>(splitItem[0], splitItem[1]);
+                    tupleList.Add(tuple);
+                }
+
+                var newProduction = new Production(tupleList);
                 newProductionsList.Add(newProduction);
             }
 
@@ -321,26 +332,61 @@ namespace GreibachNormalFormConverter
             initGrammar.Variables.RemoveAll(x => x.Contains("S_"));
         }
 
-        private void SubstituteDerivations(List<Production> productions, Grammar initGrammar)
+        /// <summary>
+        /// Substitutes every B in derivations of the form A -> BC with all possible derivations of B itself.
+        /// Since all derivations of B are already in GNF the remaining derivations that are not in GNF will be after this substitution.
+        /// </summary>
+        /// <param name="newProductions">The newly created and cleaned productions whose derivations are to be substituted.</param>
+        /// <param name="initGrammar">The initial grammar with now modified variables.</param>
+        /// <returns>The final set of production rules in the form of a production. All derivations of this production are now in GNF.</returns>
+        private Production SubstituteDerivations(List<Production> newProductions, Grammar initGrammar)
         {
+            // Select the newly created Variables whose derivations are still of the form A -> BC.
             var newVariables = initGrammar.Variables.Where(x => x.Contains("_")).ToList();
+            var productionsToSubstitute = new List<Tuple<string, string>>();
+            var substitutedProductions = new List<Tuple<string, string>>();
 
-            var productionsToSubstitute = initGrammar.Production.Derivations.Where(x => newVariables.Contains(x.Item1));
+            // Select the derivations of said variables.
+            foreach (var production in newProductions)
+            {
+                var derivationsToSubstitute = production.Derivations.Where(x => newVariables.Contains(x.Item1));
+                productionsToSubstitute.AddRange(derivationsToSubstitute);
+            }
 
+            // Substitude the first symbol of each derivation to be substituted with every possible derivation of the symbols own derivations.
             foreach (var productionToSubstitute in productionsToSubstitute)
             {
                 var symbolToSubstitute = productionToSubstitute.Item2.Substring(0, 1);
-                var productionsForSymbol = initGrammar.Production.Derivations.Where(x => x.Item1 == symbolToSubstitute);
+                var productionsForSymbol = new List<Tuple<string, string>>();
+
+                foreach (var production in newProductions)
+                {
+                    var foundProductions = production.Derivations.Where(x => x.Item1 == symbolToSubstitute);
+                    productionsForSymbol.AddRange(foundProductions);
+                }
 
                 foreach (var productionForSymbol in productionsForSymbol)
                 {
-                    var newTuple = new Tuple<string, string>
+                    var substitutedDerivation = new Tuple<string, string>
                         (
                             productionToSubstitute.Item1,
-                            productionForSymbol.Item2 + productionToSubstitute.Item2
+                            productionForSymbol.Item2 + productionToSubstitute.Item2.Substring(1)
                         );
+
+                    substitutedProductions.Add(substitutedDerivation);
                 }
             }
+
+            // Remove the now old verions of the now substituted derivations and create a new Porduction with all the newly created and freshly substituted derivations.
+            foreach (var production in newProductions)
+            {
+                production.Derivations.RemoveAll(x => x.Item1.Contains("_"));
+                substitutedProductions.AddRange(production.Derivations);
+            }
+
+            substitutedProductions.RemoveAll(x => x.Item1.Length == 1 && x.Item1 != initGrammar.Startvariable.First());
+
+            return new Production(substitutedProductions);
         }
 
         // Add placeholder in productions.
