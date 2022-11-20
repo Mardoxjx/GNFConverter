@@ -43,13 +43,19 @@
             this.S_txt = new System.Windows.Forms.TextBox();
             this.Transformation_Log = new System.Windows.Forms.ListBox();
             this.Result_lable = new System.Windows.Forms.Label();
+            this.Result_Sig_txt = new System.Windows.Forms.TextBox();
+            this.Result_Sig_lable = new System.Windows.Forms.Label();
+            this.Result_V_txt = new System.Windows.Forms.TextBox();
+            this.Result_V_lable = new System.Windows.Forms.Label();
+            this.Result_S_txt = new System.Windows.Forms.TextBox();
+            this.Result_S_lable = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // exp_lable
             // 
             this.exp_lable.Location = new System.Drawing.Point(13, 13);
             this.exp_lable.Name = "exp_lable";
-            this.exp_lable.Size = new System.Drawing.Size(831, 199);
+            this.exp_lable.Size = new System.Drawing.Size(801, 115);
             this.exp_lable.TabIndex = 0;
             this.exp_lable.Text = resources.GetString("exp_lable.Text");
             // 
@@ -150,11 +156,67 @@
             this.Result_lable.TabIndex = 12;
             this.Result_lable.Text = "The given grammar was converted into the following grammar in GNF:";
             // 
+            // Result_Sig_txt
+            // 
+            this.Result_Sig_txt.Location = new System.Drawing.Point(81, 844);
+            this.Result_Sig_txt.Name = "Result_Sig_txt";
+            this.Result_Sig_txt.Size = new System.Drawing.Size(300, 29);
+            this.Result_Sig_txt.TabIndex = 16;
+            // 
+            // Result_Sig_lable
+            // 
+            this.Result_Sig_lable.AutoSize = true;
+            this.Result_Sig_lable.Location = new System.Drawing.Point(19, 844);
+            this.Result_Sig_lable.Name = "Result_Sig_lable";
+            this.Result_Sig_lable.Size = new System.Drawing.Size(390, 25);
+            this.Result_Sig_lable.TabIndex = 15;
+            this.Result_Sig_lable.Text = "Σ = {                                                                  }";
+            // 
+            // Result_V_txt
+            // 
+            this.Result_V_txt.Location = new System.Drawing.Point(81, 668);
+            this.Result_V_txt.Multiline = true;
+            this.Result_V_txt.Name = "Result_V_txt";
+            this.Result_V_txt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.Result_V_txt.Size = new System.Drawing.Size(300, 160);
+            this.Result_V_txt.TabIndex = 14;
+            // 
+            // Result_V_lable
+            // 
+            this.Result_V_lable.AutoSize = true;
+            this.Result_V_lable.Location = new System.Drawing.Point(19, 668);
+            this.Result_V_lable.Name = "Result_V_lable";
+            this.Result_V_lable.Size = new System.Drawing.Size(392, 25);
+            this.Result_V_lable.TabIndex = 13;
+            this.Result_V_lable.Text = "V = {                                                                  }";
+            // 
+            // Result_S_txt
+            // 
+            this.Result_S_txt.Location = new System.Drawing.Point(81, 907);
+            this.Result_S_txt.Name = "Result_S_txt";
+            this.Result_S_txt.Size = new System.Drawing.Size(36, 29);
+            this.Result_S_txt.TabIndex = 18;
+            // 
+            // Result_S_lable
+            // 
+            this.Result_S_lable.AutoSize = true;
+            this.Result_S_lable.Location = new System.Drawing.Point(19, 907);
+            this.Result_S_lable.Name = "Result_S_lable";
+            this.Result_S_lable.Size = new System.Drawing.Size(122, 25);
+            this.Result_S_lable.TabIndex = 17;
+            this.Result_S_lable.Text = "S = {            }";
+            // 
             // GNFConverter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2170, 1351);
+            this.Controls.Add(this.Result_S_txt);
+            this.Controls.Add(this.Result_S_lable);
+            this.Controls.Add(this.Result_Sig_txt);
+            this.Controls.Add(this.Result_Sig_lable);
+            this.Controls.Add(this.Result_V_txt);
+            this.Controls.Add(this.Result_V_lable);
             this.Controls.Add(this.Result_lable);
             this.Controls.Add(this.Transformation_Log);
             this.Controls.Add(this.S_txt);
@@ -189,6 +251,12 @@
         private System.Windows.Forms.TextBox S_txt;
         private System.Windows.Forms.ListBox Transformation_Log;
         private System.Windows.Forms.Label Result_lable;
+        private System.Windows.Forms.TextBox Result_Sig_txt;
+        private System.Windows.Forms.Label Result_Sig_lable;
+        private System.Windows.Forms.TextBox Result_V_txt;
+        private System.Windows.Forms.Label Result_V_lable;
+        private System.Windows.Forms.TextBox Result_S_txt;
+        private System.Windows.Forms.Label Result_S_lable;
     }
 }
 

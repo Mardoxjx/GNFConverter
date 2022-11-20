@@ -39,6 +39,9 @@ namespace GreibachNormalFormConverter
             // Create new grammar in GNF with completed productions.
             var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
 
+            // Display GNF grammar in the form.
+            DisplayResult(gnfGrammar);
+
             // TODO: Logging of changes.
             MessageBox.Show("hi");
         }
@@ -387,6 +390,42 @@ namespace GreibachNormalFormConverter
             substitutedProductions.RemoveAll(x => x.Item1.Length == 1 && x.Item1 != initGrammar.Startvariable.First());
 
             return new Production(substitutedProductions);
+        }
+
+        private void DisplayResult(Grammar gnfGrammar)
+        {
+            var splitVariables = new List<string>();
+            var splitTerminals = new List<string>();
+            var splitDerivations = new List<string>();
+
+            for (int i = 0; i < gnfGrammar.Variables.Count; i++)
+            {
+                var variable = gnfGrammar.Variables[i];
+                if (i == gnfGrammar.Variables.Count - 1)
+                {
+                    splitVariables.Add(variable);
+                }
+                else
+                {
+                    splitVariables.Add(variable + ", ");
+                }
+            }
+
+            for (int i = 0; i < gnfGrammar.Terminals.Count; i++)
+            {
+                var terminal = gnfGrammar.Terminals[i];
+                if (i == gnfGrammar.Terminals.Count - 1)
+                {
+                    splitTerminals.Add(terminal);
+                }
+                else
+                {
+                    splitTerminals.Add(terminal + ", ");
+                }
+            }
+
+            Result_V_txt.Text = String.Join(Environment.NewLine, splitVariables);
+            Result_Sig_txt.Text = String.Join(Environment.NewLine, splitTerminals);
         }
 
         // Add placeholder in productions.
