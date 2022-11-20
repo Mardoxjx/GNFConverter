@@ -41,20 +41,22 @@
             this.Convert_btn = new System.Windows.Forms.Button();
             this.P_tooltip = new System.Windows.Forms.ToolTip(this.components);
             this.S_txt = new System.Windows.Forms.TextBox();
+            this.Transformation_Log = new System.Windows.Forms.ListBox();
+            this.Result_lable = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // exp_lable
             // 
             this.exp_lable.Location = new System.Drawing.Point(13, 13);
             this.exp_lable.Name = "exp_lable";
-            this.exp_lable.Size = new System.Drawing.Size(1509, 66);
+            this.exp_lable.Size = new System.Drawing.Size(831, 199);
             this.exp_lable.TabIndex = 0;
             this.exp_lable.Text = resources.GetString("exp_lable.Text");
             // 
             // V_lable
             // 
             this.V_lable.AutoSize = true;
-            this.V_lable.Location = new System.Drawing.Point(13, 83);
+            this.V_lable.Location = new System.Drawing.Point(19, 131);
             this.V_lable.Name = "V_lable";
             this.V_lable.Size = new System.Drawing.Size(392, 25);
             this.V_lable.TabIndex = 1;
@@ -62,7 +64,7 @@
             // 
             // V_txt
             // 
-            this.V_txt.Location = new System.Drawing.Point(75, 83);
+            this.V_txt.Location = new System.Drawing.Point(81, 131);
             this.V_txt.Name = "V_txt";
             this.V_txt.Size = new System.Drawing.Size(300, 29);
             this.V_txt.TabIndex = 2;
@@ -70,7 +72,7 @@
             // Sig_lable
             // 
             this.Sig_lable.AutoSize = true;
-            this.Sig_lable.Location = new System.Drawing.Point(13, 122);
+            this.Sig_lable.Location = new System.Drawing.Point(19, 170);
             this.Sig_lable.Name = "Sig_lable";
             this.Sig_lable.Size = new System.Drawing.Size(390, 25);
             this.Sig_lable.TabIndex = 3;
@@ -78,16 +80,17 @@
             // 
             // Sig_txt
             // 
-            this.Sig_txt.Location = new System.Drawing.Point(75, 122);
+            this.Sig_txt.Location = new System.Drawing.Point(81, 170);
             this.Sig_txt.Name = "Sig_txt";
             this.Sig_txt.Size = new System.Drawing.Size(300, 29);
             this.Sig_txt.TabIndex = 4;
             // 
             // P_txt
             // 
-            this.P_txt.Location = new System.Drawing.Point(75, 167);
+            this.P_txt.Location = new System.Drawing.Point(81, 215);
             this.P_txt.Multiline = true;
             this.P_txt.Name = "P_txt";
+            this.P_txt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.P_txt.Size = new System.Drawing.Size(300, 160);
             this.P_txt.TabIndex = 6;
             this.P_txt.Enter += new System.EventHandler(this.P_txt_Enter);
@@ -96,7 +99,7 @@
             // P_lable
             // 
             this.P_lable.AutoSize = true;
-            this.P_lable.Location = new System.Drawing.Point(13, 167);
+            this.P_lable.Location = new System.Drawing.Point(19, 215);
             this.P_lable.Name = "P_lable";
             this.P_lable.Size = new System.Drawing.Size(391, 25);
             this.P_lable.TabIndex = 5;
@@ -105,7 +108,7 @@
             // S_lable
             // 
             this.S_lable.AutoSize = true;
-            this.S_lable.Location = new System.Drawing.Point(13, 347);
+            this.S_lable.Location = new System.Drawing.Point(19, 395);
             this.S_lable.Name = "S_lable";
             this.S_lable.Size = new System.Drawing.Size(122, 25);
             this.S_lable.TabIndex = 7;
@@ -113,7 +116,7 @@
             // 
             // Convert_btn
             // 
-            this.Convert_btn.Location = new System.Drawing.Point(12, 419);
+            this.Convert_btn.Location = new System.Drawing.Point(18, 467);
             this.Convert_btn.Name = "Convert_btn";
             this.Convert_btn.Size = new System.Drawing.Size(173, 63);
             this.Convert_btn.TabIndex = 9;
@@ -123,16 +126,37 @@
             // 
             // S_txt
             // 
-            this.S_txt.Location = new System.Drawing.Point(75, 347);
+            this.S_txt.Location = new System.Drawing.Point(81, 395);
             this.S_txt.Name = "S_txt";
             this.S_txt.Size = new System.Drawing.Size(36, 29);
             this.S_txt.TabIndex = 10;
+            // 
+            // Transformation_Log
+            // 
+            this.Transformation_Log.FormattingEnabled = true;
+            this.Transformation_Log.ItemHeight = 24;
+            this.Transformation_Log.Location = new System.Drawing.Point(1236, 13);
+            this.Transformation_Log.Name = "Transformation_Log";
+            this.Transformation_Log.ScrollAlwaysVisible = true;
+            this.Transformation_Log.Size = new System.Drawing.Size(808, 1204);
+            this.Transformation_Log.TabIndex = 11;
+            // 
+            // Result_lable
+            // 
+            this.Result_lable.AutoSize = true;
+            this.Result_lable.Location = new System.Drawing.Point(18, 602);
+            this.Result_lable.Name = "Result_lable";
+            this.Result_lable.Size = new System.Drawing.Size(614, 25);
+            this.Result_lable.TabIndex = 12;
+            this.Result_lable.Text = "The given grammar was converted into the following grammar in GNF:";
             // 
             // GNFConverter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1519, 844);
+            this.ClientSize = new System.Drawing.Size(2170, 1351);
+            this.Controls.Add(this.Result_lable);
+            this.Controls.Add(this.Transformation_Log);
             this.Controls.Add(this.S_txt);
             this.Controls.Add(this.Convert_btn);
             this.Controls.Add(this.S_lable);
@@ -163,6 +187,8 @@
         private System.Windows.Forms.Button Convert_btn;
         private System.Windows.Forms.ToolTip P_tooltip;
         private System.Windows.Forms.TextBox S_txt;
+        private System.Windows.Forms.ListBox Transformation_Log;
+        private System.Windows.Forms.Label Result_lable;
     }
 }
 
