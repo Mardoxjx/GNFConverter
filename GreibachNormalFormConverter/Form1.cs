@@ -18,17 +18,23 @@ namespace GreibachNormalFormConverter
 
         private void Convert_btn_Click(object sender, EventArgs e)
         {
+            // Read input.
             List<string> initVariables = V_txt.Text.Replace(" ", "").Split(',').ToList();
             List<string> initTerminals = Sig_txt.Text.Replace(" ", "").Split(',').ToList();
             List<string> initProductions = P_txt.Text.Replace(" ", "").Split(';').ToList();
             List<string> initStartVariable = new List<string>() { S_txt.Text.Replace(" ", "") };
 
+            // Validate input and create grammar if input is valid.
             ValidateSymbols(initVariables, initTerminals, initStartVariable);
             Production initProduction = ValidateProductions(initProductions, initVariables, initTerminals);
             Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
 
+            // Create new productions and clean them.
             var newProductions = CreateNewProductions(initGrammar);
             CleanNewProductions(newProductions, initGrammar);
+
+            // Substitute new productions to bring them into GNF.
+            SubstituteDerivations(newProductions, initGrammar);
 
             // TODO: Implement substitution of varialbes in productions.
             // TODO: Logging of changes.
@@ -313,6 +319,28 @@ namespace GreibachNormalFormConverter
             }
 
             initGrammar.Variables.RemoveAll(x => x.Contains("S_"));
+        }
+
+        private void SubstituteDerivations(List<Production> productions, Grammar initGrammar)
+        {
+            var newVariables = initGrammar.Variables.Where(x => x.Contains("_")).ToList();
+
+            var productionsToSubstitute = initGrammar.Production.Derivations.Where(x => newVariables.Contains(x.Item1));
+
+            foreach (var productionToSubstitute in productionsToSubstitute)
+            {
+                var symbolToSubstitute = productionToSubstitute.Item2.Substring(0, 1);
+                var productionsForSymbol = initGrammar.Production.Derivations.Where(x => x.Item1 == symbolToSubstitute);
+
+                foreach (var productionForSymbol in productionsForSymbol)
+                {
+                    var newTuple = new Tuple<string, string>
+                        (
+                            productionToSubstitute.Item1,
+                            productionForSymbol.Item2 + productionToSubstitute.Item2
+                        );
+                }
+            }
         }
 
         // Add placeholder in productions.
