@@ -479,7 +479,7 @@ namespace GreibachNormalFormConverter
         {
             Transformation_Log.AppendText($"The following {nameOfChange} were {kindOfChange} during the transformation: "
             + Environment.NewLine
-            + String.Join(Environment.NewLine, changes)
+            + string.Join(Environment.NewLine, changes)
             + Environment.NewLine
             + Environment.NewLine);
         }
