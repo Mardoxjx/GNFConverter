@@ -41,7 +41,6 @@
             this.Convert_btn = new System.Windows.Forms.Button();
             this.P_tooltip = new System.Windows.Forms.ToolTip(this.components);
             this.S_txt = new System.Windows.Forms.TextBox();
-            this.Transformation_Log = new System.Windows.Forms.ListBox();
             this.Result_lable = new System.Windows.Forms.Label();
             this.Result_Sig_txt = new System.Windows.Forms.TextBox();
             this.Result_Sig_lable = new System.Windows.Forms.Label();
@@ -51,6 +50,7 @@
             this.Result_S_lable = new System.Windows.Forms.Label();
             this.Result_P_txt = new System.Windows.Forms.TextBox();
             this.Result_P_label = new System.Windows.Forms.Label();
+            this.Transformation_Log = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // exp_lable
@@ -139,16 +139,6 @@
             this.S_txt.Size = new System.Drawing.Size(36, 29);
             this.S_txt.TabIndex = 10;
             // 
-            // Transformation_Log
-            // 
-            this.Transformation_Log.FormattingEnabled = true;
-            this.Transformation_Log.ItemHeight = 24;
-            this.Transformation_Log.Location = new System.Drawing.Point(1236, 13);
-            this.Transformation_Log.Name = "Transformation_Log";
-            this.Transformation_Log.ScrollAlwaysVisible = true;
-            this.Transformation_Log.Size = new System.Drawing.Size(808, 1204);
-            this.Transformation_Log.TabIndex = 11;
-            // 
             // Result_lable
             // 
             this.Result_lable.AutoSize = true;
@@ -226,11 +216,21 @@
             this.Result_P_label.TabIndex = 19;
             this.Result_P_label.Text = "P = {                                                                  }";
             // 
+            // Transformation_Log
+            // 
+            this.Transformation_Log.Location = new System.Drawing.Point(1059, 13);
+            this.Transformation_Log.Multiline = true;
+            this.Transformation_Log.Name = "Transformation_Log";
+            this.Transformation_Log.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.Transformation_Log.Size = new System.Drawing.Size(1034, 1187);
+            this.Transformation_Log.TabIndex = 21;
+            // 
             // GNFConverter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2170, 1351);
+            this.Controls.Add(this.Transformation_Log);
             this.Controls.Add(this.Result_P_txt);
             this.Controls.Add(this.Result_P_label);
             this.Controls.Add(this.Result_S_txt);
@@ -240,7 +240,6 @@
             this.Controls.Add(this.Result_V_txt);
             this.Controls.Add(this.Result_V_lable);
             this.Controls.Add(this.Result_lable);
-            this.Controls.Add(this.Transformation_Log);
             this.Controls.Add(this.S_txt);
             this.Controls.Add(this.Convert_btn);
             this.Controls.Add(this.S_lable);
@@ -271,7 +270,6 @@
         private System.Windows.Forms.Button Convert_btn;
         private System.Windows.Forms.ToolTip P_tooltip;
         private System.Windows.Forms.TextBox S_txt;
-        private System.Windows.Forms.ListBox Transformation_Log;
         private System.Windows.Forms.Label Result_lable;
         private System.Windows.Forms.TextBox Result_Sig_txt;
         private System.Windows.Forms.Label Result_Sig_lable;
@@ -281,6 +279,7 @@
         private System.Windows.Forms.Label Result_S_lable;
         private System.Windows.Forms.TextBox Result_P_txt;
         private System.Windows.Forms.Label Result_P_label;
+        private System.Windows.Forms.TextBox Transformation_Log;
     }
 }
 

@@ -12,6 +12,7 @@ namespace GreibachNormalFormConverter
         {
             InitializeComponent();
             P_tooltip.ShowAlways = true;
+            Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine;
             P_tooltip.SetToolTip(this.P_txt, "Please seperate Productions with ';'!");
             P_txt.Text = "Please note productions like the following: A -> x; A -> y; B -> z";
         }
@@ -276,6 +277,24 @@ namespace GreibachNormalFormConverter
                 newProductionsList.Add(newProduction);
             }
 
+            // Logging the changes.
+            LogChanges(newVariables, "variables", "created");
+
+            var loggedProductions = new List<string>();
+
+            // format newProductions to string list for logging.
+            foreach (var newProduction in newProductionsList)
+            {
+                var derivations = newProduction.Derivations;
+
+                foreach (var derivation in derivations)
+                {
+                    loggedProductions.Add(derivation.Item1 + " -> " + derivation.Item2);
+                }
+            }
+
+            LogChanges(loggedProductions, "new productions", "created");
+
             return newProductionsList;
         }
 
@@ -404,6 +423,7 @@ namespace GreibachNormalFormConverter
             {
                 var variable = gnfGrammar.Variables[i];
                 if (i == gnfGrammar.Variables.Count - 1)
+
                 {
                     splitVariables.Add(variable);
                 }
@@ -418,6 +438,7 @@ namespace GreibachNormalFormConverter
             {
                 var terminal = gnfGrammar.Terminals[i];
                 if (i == gnfGrammar.Terminals.Count - 1)
+
                 {
                     splitTerminals.Add(terminal);
                 }
@@ -431,13 +452,14 @@ namespace GreibachNormalFormConverter
             for (int i = 0; i < gnfGrammar.Production.Derivations.Count; i++)
             {
                 var derivation = gnfGrammar.Production.Derivations[i];
+
                 if (i == gnfGrammar.Production.Derivations.Count - 1)
                 {
-                    splitDerivations.Add(derivation.Item1 + "->" + derivation.Item2);
+                    splitDerivations.Add(derivation.Item1 + " -> " + derivation.Item2);
                 }
                 else
                 {
-                    splitDerivations.Add(derivation.Item1 + "->" + derivation.Item2 + ", ");
+                    splitDerivations.Add(derivation.Item1 + " -> " + derivation.Item2 + ", ");
                 }
             }
 
@@ -445,7 +467,16 @@ namespace GreibachNormalFormConverter
             Result_V_txt.Text = String.Join(Environment.NewLine, splitVariables);
             Result_Sig_txt.Text = String.Join(Environment.NewLine, splitTerminals);
             Result_P_txt.Text = String.Join(Environment.NewLine, splitDerivations);
-            Result_S_txt.Text = gnfGrammar.Startvariable.ToString();
+            Result_S_txt.Text = String.Join(Environment.NewLine, gnfGrammar.Startvariable);
+        }
+
+        private void LogChanges(List<string> changes, string nameOfChange, string kindOfChange)
+        {
+            Transformation_Log.AppendText($"The following {nameOfChange} were {kindOfChange} during the transformation: "
+            + Environment.NewLine
+            + String.Join(Environment.NewLine, changes)
+            + Environment.NewLine
+            + Environment.NewLine);
         }
 
         // Add placeholder in productions.
