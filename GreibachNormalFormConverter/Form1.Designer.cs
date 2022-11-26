@@ -49,6 +49,8 @@
             this.Result_V_lable = new System.Windows.Forms.Label();
             this.Result_S_txt = new System.Windows.Forms.TextBox();
             this.Result_S_lable = new System.Windows.Forms.Label();
+            this.Result_P_txt = new System.Windows.Forms.TextBox();
+            this.Result_P_label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // exp_lable
@@ -192,7 +194,7 @@
             // 
             // Result_S_txt
             // 
-            this.Result_S_txt.Location = new System.Drawing.Point(81, 907);
+            this.Result_S_txt.Location = new System.Drawing.Point(81, 1218);
             this.Result_S_txt.Name = "Result_S_txt";
             this.Result_S_txt.Size = new System.Drawing.Size(36, 29);
             this.Result_S_txt.TabIndex = 18;
@@ -200,17 +202,37 @@
             // Result_S_lable
             // 
             this.Result_S_lable.AutoSize = true;
-            this.Result_S_lable.Location = new System.Drawing.Point(19, 907);
+            this.Result_S_lable.Location = new System.Drawing.Point(19, 1218);
             this.Result_S_lable.Name = "Result_S_lable";
             this.Result_S_lable.Size = new System.Drawing.Size(122, 25);
             this.Result_S_lable.TabIndex = 17;
             this.Result_S_lable.Text = "S = {            }";
+            // 
+            // Result_P_txt
+            // 
+            this.Result_P_txt.Location = new System.Drawing.Point(81, 890);
+            this.Result_P_txt.Multiline = true;
+            this.Result_P_txt.Name = "Result_P_txt";
+            this.Result_P_txt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.Result_P_txt.Size = new System.Drawing.Size(300, 297);
+            this.Result_P_txt.TabIndex = 20;
+            // 
+            // Result_P_label
+            // 
+            this.Result_P_label.AutoSize = true;
+            this.Result_P_label.Location = new System.Drawing.Point(19, 890);
+            this.Result_P_label.Name = "Result_P_label";
+            this.Result_P_label.Size = new System.Drawing.Size(391, 25);
+            this.Result_P_label.TabIndex = 19;
+            this.Result_P_label.Text = "P = {                                                                  }";
             // 
             // GNFConverter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2170, 1351);
+            this.Controls.Add(this.Result_P_txt);
+            this.Controls.Add(this.Result_P_label);
             this.Controls.Add(this.Result_S_txt);
             this.Controls.Add(this.Result_S_lable);
             this.Controls.Add(this.Result_Sig_txt);
@@ -257,6 +279,8 @@
         private System.Windows.Forms.Label Result_V_lable;
         private System.Windows.Forms.TextBox Result_S_txt;
         private System.Windows.Forms.Label Result_S_lable;
+        private System.Windows.Forms.TextBox Result_P_txt;
+        private System.Windows.Forms.Label Result_P_label;
     }
 }
 

@@ -41,9 +41,6 @@ namespace GreibachNormalFormConverter
 
             // Display GNF grammar in the form.
             DisplayResult(gnfGrammar);
-
-            // TODO: Logging of changes.
-            MessageBox.Show("hi");
         }
 
         /// <summary>
@@ -392,12 +389,17 @@ namespace GreibachNormalFormConverter
             return new Production(substitutedProductions);
         }
 
+        /// <summary>
+        /// Formats the variable, terminal, production and startvariable sets into strings and displays them in the dedicated textboxes on the UI.
+        /// </summary>
+        /// <param name="gnfGrammar">The finished grammar in GNF.</param>
         private void DisplayResult(Grammar gnfGrammar)
         {
             var splitVariables = new List<string>();
             var splitTerminals = new List<string>();
             var splitDerivations = new List<string>();
 
+            // Split all variables into strings appended with a comma unless it is the last variable.
             for (int i = 0; i < gnfGrammar.Variables.Count; i++)
             {
                 var variable = gnfGrammar.Variables[i];
@@ -411,6 +413,7 @@ namespace GreibachNormalFormConverter
                 }
             }
 
+            // Split all terminals into strings appended with a comma unless it is the last terminal.
             for (int i = 0; i < gnfGrammar.Terminals.Count; i++)
             {
                 var terminal = gnfGrammar.Terminals[i];
@@ -424,8 +427,25 @@ namespace GreibachNormalFormConverter
                 }
             }
 
+            // Split all derivations into strings joined by "->", and appended with a comma unless it is the last derivation.
+            for (int i = 0; i < gnfGrammar.Production.Derivations.Count; i++)
+            {
+                var derivation = gnfGrammar.Production.Derivations[i];
+                if (i == gnfGrammar.Production.Derivations.Count - 1)
+                {
+                    splitDerivations.Add(derivation.Item1 + "->" + derivation.Item2);
+                }
+                else
+                {
+                    splitDerivations.Add(derivation.Item1 + "->" + derivation.Item2 + ", ");
+                }
+            }
+
+            // Display the variables, terminals, derivations and the startvariable in the dedicated textboxes.
             Result_V_txt.Text = String.Join(Environment.NewLine, splitVariables);
             Result_Sig_txt.Text = String.Join(Environment.NewLine, splitTerminals);
+            Result_P_txt.Text = String.Join(Environment.NewLine, splitDerivations);
+            Result_S_txt.Text = gnfGrammar.Startvariable.ToString();
         }
 
         // Add placeholder in productions.
