@@ -14,7 +14,12 @@ namespace GreibachNormalFormConverter
             P_tooltip.ShowAlways = true;
             Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine;
             P_tooltip.SetToolTip(this.P_txt, "Please seperate Productions with ';'!");
-            P_txt.Text = "Please note productions like the following: A -> x; A -> y; B -> z";
+            V_txt.Text = "S,B,C,D,E";
+            Sig_txt.Text = "a,b";
+            P_txt.Text = "S->BC;S->b;B->CD;B->ED;B->a;C->BC;C->DE;D->a;E->b";
+            S_txt.Text = "S";
+            // TODO: add dropdown box with different example grammars.
+            //P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
         }
 
         private void Convert_btn_Click(object sender, EventArgs e)
@@ -283,9 +288,9 @@ namespace GreibachNormalFormConverter
             var loggedProductions = new List<string>();
 
             // format newProductions to string list for logging.
-            foreach (var newProduction in newProductionsList)
+            foreach (var newProduction in newProductionsList.Select(newProduction => newProduction.Derivations))
             {
-                var derivations = newProduction.Derivations;
+                var derivations = newProduction;
 
                 foreach (var derivation in derivations)
                 {
