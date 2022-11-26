@@ -288,7 +288,7 @@ namespace GreibachNormalFormConverter
             var loggedProductions = new List<string>();
 
             // format newProductions to string list for logging.
-            foreach (var newProduction in newProductionsList.Select(newProduction => newProduction.Derivations))
+            foreach (var newProduction in newProductionsList.Select(x => x.Derivations))
             {
                 var derivations = newProduction;
 
@@ -402,10 +402,10 @@ namespace GreibachNormalFormConverter
             }
 
             // Remove the now old verions of the now substituted derivations and create a new Porduction with all the newly created and freshly substituted derivations.
-            foreach (var production in newProductions)
+            foreach (var production in newProductions.Select(x => x.Derivations))
             {
-                production.Derivations.RemoveAll(x => x.Item1.Contains("_"));
-                substitutedProductions.AddRange(production.Derivations);
+                production.RemoveAll(x => x.Item1.Contains("_"));
+                substitutedProductions.AddRange(production);
             }
 
             substitutedProductions.RemoveAll(x => x.Item1.Length == 1 && x.Item1 != initGrammar.Startvariable.First());
