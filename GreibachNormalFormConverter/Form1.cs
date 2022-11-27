@@ -12,11 +12,11 @@ namespace GreibachNormalFormConverter
         {
             InitializeComponent();
             P_tooltip.ShowAlways = true;
-            Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine;
+            Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine + Environment.NewLine;
             P_tooltip.SetToolTip(this.P_txt, "Please seperate Productions with ';'!");
-            V_txt.Text = "S,B,C,D,E";
-            Sig_txt.Text = "a,b";
-            P_txt.Text = "S->BC;S->b;B->CD;B->ED;B->a;C->BC;C->DE;D->a;E->b";
+            V_txt.Text = "S, B, C, D, E";
+            Sig_txt.Text = "a, b";
+            P_txt.Text = "S -> BC; S -> b; B -> CD; B -> ED; B -> a; C -> BC; C -> DE; D -> a; E -> b";
             S_txt.Text = "S";
             // TODO: add dropdown box with different example grammars.
             //P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
@@ -31,22 +31,32 @@ namespace GreibachNormalFormConverter
             List<string> initStartVariable = new List<string>() { S_txt.Text.Replace(" ", "") };
 
             // Validate input and create grammar if input is valid.
-            ValidateSymbols(initVariables, initTerminals, initStartVariable);
-            Production initProduction = ValidateProductions(initProductions, initVariables, initTerminals);
-            Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
+            if (ValidateSymbols(initVariables, initTerminals, initStartVariable))
+            {
+                // Returns valid production derivations and bool stating if they are valid.
+                var productionsAreValid = ValidateProductions(initProductions, initVariables, initTerminals);
+                if (productionsAreValid.Item2)
+                {
+                    var initProduction = new Production(productionsAreValid.Item1);
+                    Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
 
-            // Create new productions and clean them.
-            var newProductions = CreateNewProductions(initGrammar);
-            CleanNewProductions(newProductions, initGrammar);
+                    Transformation_Log.AppendText("The given grammar is valid. The transformation will now commence." + Environment.NewLine + Environment.NewLine);
 
-            // Substitute new productions to bring them into GNF.
-            var completeProduction = SubstituteDerivations(newProductions, initGrammar);
+                    // Create new productions and clean them.
+                    var newProductions = CreateNewProductions(initGrammar);
+                    CleanNewProductions(newProductions, initGrammar);
 
-            // Create new grammar in GNF with completed productions.
-            var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
+                    // Substitute new productions to bring them into GNF.
+                    var completeProduction = SubstituteDerivations(newProductions, initGrammar);
 
-            // Display GNF grammar in the form.
-            DisplayResult(gnfGrammar);
+                    // Create new grammar in GNF with completed productions.
+                    var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
+
+                    // Display GNF grammar in the form.
+                    DisplayResult(gnfGrammar); 
+                }
+            }
+
         }
 
         /// <summary>
@@ -56,10 +66,12 @@ namespace GreibachNormalFormConverter
         /// <param name="variables">The variables to be validated.</param>
         /// <param name="terminals">The terminals to be validated</param>
         /// <param name="startVariable">The startVariable to be validated.</param>
-        private void ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
+        private bool ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
         {
             // Regex only allowing roman lower-/uppercase letters.
             var regex = new Regex(@"^[a-zA-Z]+$");
+
+            // TODO: a, b, S will not throw right now. Fix this.
 
             try
             {
@@ -110,8 +122,10 @@ namespace GreibachNormalFormConverter
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                return false;
             }
 
+            return true;
         }
 
         /// <summary>
@@ -122,13 +136,15 @@ namespace GreibachNormalFormConverter
         /// <param name="variables">The set of variables which is used for validation of the productions.</param>
         /// <param name="terminals">The set of terminals which is used for validation of the productions.</param>
         /// <returns>A valid production.</returns>
-        private Production ValidateProductions(List<string> productions, List<string> variables, List<string> terminals)
+        private Tuple<List<Tuple<string, string>>, bool> ValidateProductions(List<string> productions, List<string> variables, List<string> terminals)
         {
             var leftSideList = new List<string>();
             var rightSideList = new List<string>();
             var tupleList = new List<Tuple<string, string>>();
 
             // TODO: check if all symbols of production are in variables U terminals.
+            // TODO: a -> b, b can be null right now. Fix this.
+            // TODO: Trim commas.
 
             try
             {
@@ -171,9 +187,10 @@ namespace GreibachNormalFormConverter
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                return Tuple.Create(new List<Tuple<string, string>>(), false);
             }
 
-            return new Production(tupleList);
+            return Tuple.Create(tupleList, true);
         }
 
         /// <summary>
@@ -283,7 +300,7 @@ namespace GreibachNormalFormConverter
             }
 
             // Logging the changes.
-            LogChanges(newVariables, "variables", "created");
+            LogChanges(newVariables.OrderBy(x => x).ToList(), "variables", "created");
 
             var loggedProductions = new List<string>();
 
@@ -298,7 +315,7 @@ namespace GreibachNormalFormConverter
                 }
             }
 
-            LogChanges(loggedProductions, "new productions", "created");
+            LogChanges(loggedProductions.OrderBy(x => x).ToList(), "new productions", "created");
 
             return newProductionsList;
         }
