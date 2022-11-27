@@ -21,6 +21,7 @@ namespace GreibachNormalFormConverter
             // TODO: add dropdown box with different example grammars.
             // TODO: obsolete derivations logging incomplete.
             // TODO: remove derivations for S in substituted derivations.
+            // TODO: optimize validation.
             //P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
         }
 
@@ -396,9 +397,15 @@ namespace GreibachNormalFormConverter
 
             // Remove derivations where the right side never occurs on any left side, thus being useless.
             // The variables in question are the newly created startVariables S_X.
-            foreach (var production in newProductions)
+            foreach (var production in newProductions.Select(x => x.Derivations))
             {
-                production.Derivations.RemoveAll(x => x.Item2.Contains("S_"));
+                var removedStartDerivations = production.Where(x => x.Item2.Contains("S_"));
+                foreach (var derivation in removedStartDerivations)
+                {
+                    removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2 + ", ");
+                }
+
+                production.RemoveAll(x => x.Item2.Contains("S_"));
             }
 
             removedVariableList.Add(String.Join(", " + Environment.NewLine, initGrammar.Variables.Where(x => x.Contains("S_"))));
@@ -406,7 +413,7 @@ namespace GreibachNormalFormConverter
 
             // Logging the changes
             LogChanges(removedVariableList.Distinct().ToList(), "obsolete variables", "removed from the newly created variables");
-            LogChanges(removedDerivationList, "obsolete derivations", "removed from the newly created derivations");
+            LogChanges(removedDerivationList.OrderBy(x => x).ToList(), "obsolete derivations", "removed from the newly created derivations");
         }
 
         /// <summary>
