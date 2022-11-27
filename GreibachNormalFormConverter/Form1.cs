@@ -20,7 +20,7 @@ namespace GreibachNormalFormConverter
             S_txt.Text = "S";
             // TODO: add dropdown box with different example grammars.
             // TODO: optimize validation.
-            //P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
+            // P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
         }
 
         /// <summary>
@@ -37,9 +37,9 @@ namespace GreibachNormalFormConverter
             Result_S_txt.Text = "";
 
             // Read input.
-            List<string> initVariables = V_txt.Text.Replace(" ", "").Split(',').ToList();
-            List<string> initTerminals = Sig_txt.Text.Replace(" ", "").Split(',').ToList();
-            List<string> initProductions = P_txt.Text.Replace(" ", "").Split(';').ToList();
+            List<string> initVariables = V_txt.Text.Replace(" ", "").TrimEnd(',').Split(',').ToList();
+            List<string> initTerminals = Sig_txt.Text.Replace(" ", "").TrimEnd(',').Split(',').ToList();
+            List<string> initProductions = P_txt.Text.Replace(" ", "").TrimEnd(';').Split(';').ToList();
             List<string> initStartVariable = new List<string>() { S_txt.Text.Replace(" ", "") };
 
             // Validate input and create grammar if input is valid.
@@ -69,7 +69,7 @@ namespace GreibachNormalFormConverter
                     var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
 
                     // Display GNF grammar in the form.
-                    DisplayResult(gnfGrammar); 
+                    DisplayResult(gnfGrammar);
                 }
             }
 
@@ -87,8 +87,6 @@ namespace GreibachNormalFormConverter
         {
             // Regex only allowing roman lower-/uppercase letters.
             var regex = new Regex(@"^[a-zA-Z]+$");
-
-            // TODO: a, b, S will not throw right now. Fix this.
 
             try
             {
@@ -131,7 +129,7 @@ namespace GreibachNormalFormConverter
                 }
 
                 // Check if variables and terminals are disjoint.
-                if (variables.SequenceEqual(terminals))
+                if (variables.Any(x => terminals.Contains(x)))
                 {
                     throw new ArgumentException("The sets variables and terminals MUST be disjoint!");
                 }
@@ -163,10 +161,6 @@ namespace GreibachNormalFormConverter
             var rightSideList = new List<string>();
             var tupleList = new List<Tuple<string, string>>();
 
-            // TODO: check if all symbols of production are in variables U terminals.
-            // TODO: a -> b, b can be null right now. Fix this.
-            // TODO: Trim commas.
-
             try
             {
                 // Check if productions are empty.
@@ -191,6 +185,12 @@ namespace GreibachNormalFormConverter
                     {
                         throw new ArgumentException("The left side of each production MUST be a variable. The given grammar is not context-free!");
                     }
+                }
+
+                // Check if right side is empty or null.
+                if (rightSideList.Any(x => String.IsNullOrEmpty(x)))
+                {
+                    throw new ArgumentException("The right side of each production MUST not be empty!");
                 }
 
                 // Check if each rightSideSymbol is contained in the variable and/or terminal set.
@@ -385,7 +385,7 @@ namespace GreibachNormalFormConverter
                         var removedDerivations = production.Where(x => x.Item1 == symbol);
                         foreach (var derivation in removedDerivations)
                         {
-                            removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2); 
+                            removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2);
                         }
 
                         production.RemoveAll(x => x.Item1 == symbol);
