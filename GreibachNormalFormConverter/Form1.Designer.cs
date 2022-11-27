@@ -51,6 +51,8 @@
             this.Result_P_txt = new System.Windows.Forms.TextBox();
             this.Result_P_label = new System.Windows.Forms.Label();
             this.Transformation_Log = new System.Windows.Forms.TextBox();
+            this.ComboBox = new System.Windows.Forms.ComboBox();
+            this.Combo_lable = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // exp_lable
@@ -226,11 +228,33 @@
             this.Transformation_Log.Size = new System.Drawing.Size(1142, 1187);
             this.Transformation_Log.TabIndex = 21;
             // 
+            // ComboBox
+            // 
+            this.ComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.ComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.ComboBox.FormattingEnabled = true;
+            this.ComboBox.Location = new System.Drawing.Point(502, 163);
+            this.ComboBox.Name = "ComboBox";
+            this.ComboBox.Size = new System.Drawing.Size(265, 32);
+            this.ComboBox.TabIndex = 22;
+            this.ComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBox_SelectedIndexChanged);
+            // 
+            // Combo_lable
+            // 
+            this.Combo_lable.AutoSize = true;
+            this.Combo_lable.Location = new System.Drawing.Point(475, 130);
+            this.Combo_lable.Name = "Combo_lable";
+            this.Combo_lable.Size = new System.Drawing.Size(305, 25);
+            this.Combo_lable.TabIndex = 23;
+            this.Combo_lable.Text = "Select an example grammar here:";
+            // 
             // GNFConverter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2170, 1351);
+            this.Controls.Add(this.Combo_lable);
+            this.Controls.Add(this.ComboBox);
             this.Controls.Add(this.Transformation_Log);
             this.Controls.Add(this.Result_P_txt);
             this.Controls.Add(this.Result_P_label);
@@ -282,6 +306,8 @@
         private System.Windows.Forms.TextBox Result_P_txt;
         private System.Windows.Forms.Label Result_P_label;
         private System.Windows.Forms.TextBox Transformation_Log;
+        private System.Windows.Forms.ComboBox ComboBox;
+        private System.Windows.Forms.Label Combo_lable;
     }
 }
 

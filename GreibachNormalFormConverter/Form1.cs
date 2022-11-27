@@ -14,12 +14,48 @@ namespace GreibachNormalFormConverter
             P_tooltip.ShowAlways = true;
             Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine + Environment.NewLine;
             P_tooltip.SetToolTip(this.P_txt, "Please seperate Productions with ';'!");
-            V_txt.Text = "S, B, C, D, E";
-            Sig_txt.Text = "a, b";
-            P_txt.Text = "S -> BC; S -> b; B -> CD; B -> ED; B -> a; C -> BC; C -> DE; D -> a; E -> b";
-            S_txt.Text = "S";
+
+            ComboBox.Items.Add("Grammar 1");
+            ComboBox.Items.Add("Grammar 2");
+            ComboBox.Items.Add("Grammar 3");
+            ComboBox.Items.Add("Grammar 4");
+            ComboBox.Items.Add("");
             // TODO: add dropdown box with different example grammars.
             // P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
+        }
+
+        private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (ComboBox.SelectedIndex)
+            {
+                case 0:
+                    V_txt.Text = "S, B, C, D, E";
+                    Sig_txt.Text = "a, b";
+                    P_txt.Text = "S -> BC; S -> b; B -> CD; B -> ED; B -> a; C -> BC; C -> DE; D -> a; E -> b";
+                    S_txt.Text = "S";
+                    break;
+
+                case 1:
+                    V_txt.Text = "S, T, A, Z";
+                    Sig_txt.Text = "a";
+                    P_txt.Text = "S -> TA; S -> AA; S -> ZA; S -> a; T -> AA; A -> ZA; A -> a; Z -> a";
+                    S_txt.Text = "S";
+                    break;
+
+                case 2:
+                    break;
+
+                case 3:
+                    break;
+
+                case 4:
+                    Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine + Environment.NewLine;
+                    V_txt.Text = "";
+                    Sig_txt.Text = "";
+                    P_txt.Text = "";
+                    S_txt.Text = "";
+                    break;
+            }
         }
 
         /// <summary>
