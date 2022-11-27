@@ -250,6 +250,7 @@
             this.Controls.Add(this.V_txt);
             this.Controls.Add(this.V_lable);
             this.Controls.Add(this.exp_lable);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "GNFConverter";
             this.Text = "GNFConverter";
             this.ResumeLayout(false);

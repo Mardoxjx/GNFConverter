@@ -24,6 +24,13 @@ namespace GreibachNormalFormConverter
 
         private void Convert_btn_Click(object sender, EventArgs e)
         {
+            // Clean UI.
+            Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine + Environment.NewLine;
+            Result_V_txt.Text = "";
+            Result_Sig_txt.Text = "";
+            Result_P_txt.Text = "";
+            Result_S_txt.Text = "";
+
             // Read input.
             List<string> initVariables = V_txt.Text.Replace(" ", "").Split(',').ToList();
             List<string> initTerminals = Sig_txt.Text.Replace(" ", "").Split(',').ToList();
@@ -48,6 +55,8 @@ namespace GreibachNormalFormConverter
 
                     // Substitute new productions to bring them into GNF.
                     var completeProduction = SubstituteDerivations(newProductions, initGrammar);
+
+                    Transformation_Log.AppendText("The transformation was complete! The given grammar was successfully transformed into a GNF grammar, that produces the same language!");
 
                     // Create new grammar in GNF with completed productions.
                     var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
@@ -122,6 +131,7 @@ namespace GreibachNormalFormConverter
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of variables/terminals.");
                 return false;
             }
 
@@ -187,6 +197,7 @@ namespace GreibachNormalFormConverter
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of productions.");
                 return Tuple.Create(new List<Tuple<string, string>>(), false);
             }
 
@@ -315,7 +326,7 @@ namespace GreibachNormalFormConverter
                 }
             }
 
-            LogChanges(loggedProductions.OrderBy(x => x).ToList(), "new productions", "created");
+            LogChanges(loggedProductions.OrderBy(x => x).ToList(), "new derivations", "newly created");
 
             return newProductionsList;
         }
@@ -330,6 +341,9 @@ namespace GreibachNormalFormConverter
             var firstRightSymbols = new List<string>();
             var secondRightSymbols = new List<string>();
             var leftSymbols = new List<string>();
+
+            var removedVariableList = new List<string>();
+            var removedDerivationList = new List<string>();
 
             // Split each derivation in each production into left side and the first and second part of the right side.
             foreach (var production in newProductions)
@@ -354,9 +368,16 @@ namespace GreibachNormalFormConverter
             {
                 if (firstRightSymbols.All(x => x != symbol) && secondRightSymbols.All(y => y != symbol))
                 {
-                    foreach (var production in newProductions)
+                    foreach (var production in newProductions.Select(x => x.Derivations))
                     {
-                        production.Derivations.RemoveAll(x => x.Item1 == symbol);
+                        removedVariableList.Add(symbol + ", ");
+                        var removedDerivations = production.Where(x => x.Item1 == symbol);
+                        foreach (var derivation in removedDerivations)
+                        {
+                            removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2 + ", "); 
+                        }
+
+                        production.RemoveAll(x => x.Item1 == symbol);
                     }
 
                     initGrammar.Variables.Remove(symbol);
@@ -370,7 +391,12 @@ namespace GreibachNormalFormConverter
                 production.Derivations.RemoveAll(x => x.Item2.Contains("S_"));
             }
 
+            removedVariableList.Add(String.Join(", " + Environment.NewLine, initGrammar.Variables.Where(x => x.Contains("S_"))));
             initGrammar.Variables.RemoveAll(x => x.Contains("S_"));
+
+            // Logging the changes
+            LogChanges(removedVariableList.Distinct().ToList(), "obsolete variables", "removed from the newly created variables");
+            LogChanges(removedDerivationList, "obsolete derivations", "removed from the newly created derivations");
         }
 
         /// <summary>
@@ -418,6 +444,8 @@ namespace GreibachNormalFormConverter
                 }
             }
 
+            var productionsToLog = substitutedProductions;
+
             // Remove the now old verions of the now substituted derivations and create a new Porduction with all the newly created and freshly substituted derivations.
             foreach (var production in newProductions.Select(x => x.Derivations))
             {
@@ -426,6 +454,22 @@ namespace GreibachNormalFormConverter
             }
 
             substitutedProductions.RemoveAll(x => x.Item1.Length == 1 && x.Item1 != initGrammar.Startvariable.First());
+
+            // Logging the changes.
+            var variableList = new List<string>
+            {
+                String.Join(", " + Environment.NewLine, newVariables)
+            };
+
+            var productionList = new List<string>();
+
+            foreach (var production in productionsToLog)
+            {
+                productionList.Add(String.Join(", " + Environment.NewLine, production.Item1 + " -> " + production.Item2));
+            }
+
+            LogChanges(variableList, "variables' derivations", "not yet brought into GNF");
+            LogChanges(productionList, "derivations", "substituted and brought into GNF");
 
             return new Production(substitutedProductions);
         }
@@ -492,6 +536,12 @@ namespace GreibachNormalFormConverter
             Result_S_txt.Text = String.Join(Environment.NewLine, gnfGrammar.Startvariable);
         }
 
+        /// <summary>
+        /// A somewhat generic method to log changes to the transformation log.
+        /// </summary>
+        /// <param name="changes">The changes that happend in the form of a string List.</param>
+        /// <param name="nameOfChange">The name of what was changed e.g. variables/terminals/derivations.</param>
+        /// <param name="kindOfChange">What the change was e.g. removed/created/substituted.</param>
         private void LogChanges(List<string> changes, string nameOfChange, string kindOfChange)
         {
             Transformation_Log.AppendText($"The following {nameOfChange} were {kindOfChange} during the transformation: "
