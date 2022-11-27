@@ -382,11 +382,11 @@ namespace GreibachNormalFormConverter
                 {
                     foreach (var production in newProductions.Select(x => x.Derivations))
                     {
-                        removedVariableList.Add(symbol + ", ");
+                        removedVariableList.Add(symbol);
                         var removedDerivations = production.Where(x => x.Item1 == symbol);
                         foreach (var derivation in removedDerivations)
                         {
-                            removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2 + ", "); 
+                            removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2); 
                         }
 
                         production.RemoveAll(x => x.Item1 == symbol);
@@ -400,16 +400,16 @@ namespace GreibachNormalFormConverter
             // The variables in question are the newly created startVariables S_X.
             foreach (var production in newProductions.Select(x => x.Derivations))
             {
-                var removedStartDerivations = production.Where(x => x.Item2.Contains("S_"));
+                var removedStartDerivations = production.Where(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
                 foreach (var derivation in removedStartDerivations)
                 {
-                    removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2 + ", ");
+                    removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2);
                 }
 
                 production.RemoveAll(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
             }
 
-            removedVariableList.Add(String.Join(", " + Environment.NewLine, initGrammar.Variables.Where(x => x.Contains(initGrammar.Startvariable.First() + "_"))));
+            removedVariableList.Add(String.Join(Environment.NewLine, initGrammar.Variables.Where(x => x.Contains(initGrammar.Startvariable.First() + "_"))));
             initGrammar.Variables.RemoveAll(x => x.Contains(initGrammar.Startvariable.First() + "_"));
 
             // Logging the changes
@@ -480,14 +480,14 @@ namespace GreibachNormalFormConverter
             // Logging the changes.
             var variableList = new List<string>
             {
-                String.Join(", " + Environment.NewLine, newVariables)
+                String.Join(Environment.NewLine, newVariables)
             };
 
             var productionList = new List<string>();
 
             foreach (var production in productionsToLog.Where(x => x.Item1.Length != 1))
             {
-                productionList.Add(String.Join(", " + Environment.NewLine, production.Item1 + " -> " + production.Item2));
+                productionList.Add(String.Join(Environment.NewLine, production.Item1 + " -> " + production.Item2));
             }
 
             LogChanges(variableList, "variables' derivations", "not yet brought into GNF");
