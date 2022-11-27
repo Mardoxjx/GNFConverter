@@ -79,6 +79,7 @@ namespace GreibachNormalFormConverter
         /// <param name="variables">The variables to be validated.</param>
         /// <param name="terminals">The terminals to be validated</param>
         /// <param name="startVariable">The startVariable to be validated.</param>
+        /// <returns>True if the sets are valid, otherwise false.</returns>
         private bool ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
         {
             // Regex only allowing roman lower-/uppercase letters.
@@ -149,7 +150,10 @@ namespace GreibachNormalFormConverter
         /// <param name="productions">The productions to be validated.</param>
         /// <param name="variables">The set of variables which is used for validation of the productions.</param>
         /// <param name="terminals">The set of terminals which is used for validation of the productions.</param>
-        /// <returns>A valid production.</returns>
+        /// <returns>
+        /// A Tuple containing a list of derivation tuples to create the production and a bool containing the information of the initial production's validity.
+        /// The list of tuples is empty and the bool false if the inital productions are invalid. Otherwise the list of tuples is filled correctly and the bool is true.
+        /// </returns>
         private Tuple<List<Tuple<string, string>>, bool> ValidateProductions(List<string> productions, List<string> variables, List<string> terminals)
         {
             var leftSideList = new List<string>();
