@@ -22,6 +22,10 @@ namespace GreibachNormalFormConverter
             //P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
         }
 
+        /// <summary>
+        /// This method is called when the convert button is clicked.
+        /// Within this method the UI will be cleaned, the input will be read, and the methods that execute the different steps of the algorithm will be called.
+        /// </summary>
         private void Convert_btn_Click(object sender, EventArgs e)
         {
             // Clean UI.
