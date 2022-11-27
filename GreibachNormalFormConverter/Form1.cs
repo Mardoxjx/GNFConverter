@@ -21,6 +21,7 @@ namespace GreibachNormalFormConverter
             ComboBox.Items.Add("Grammar 4");
             ComboBox.Items.Add("");
             // TODO: Add remaining example grammar to combobox.
+            // TODO: add check for cnf, currently A -> BCD is valid.
             // P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
         }
 
