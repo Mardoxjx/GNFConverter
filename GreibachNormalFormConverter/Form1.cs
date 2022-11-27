@@ -19,7 +19,6 @@ namespace GreibachNormalFormConverter
             P_txt.Text = "S -> BC; S -> b; B -> CD; B -> ED; B -> a; C -> BC; C -> DE; D -> a; E -> b";
             S_txt.Text = "S";
             // TODO: add dropdown box with different example grammars.
-            // TODO: remove derivations for S in substituted derivations.
             // TODO: optimize validation.
             //P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
         }
