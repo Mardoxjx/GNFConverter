@@ -20,7 +20,7 @@ namespace GreibachNormalFormConverter
             ComboBox.Items.Add("Grammar 3");
             ComboBox.Items.Add("Grammar 4");
             ComboBox.Items.Add("");
-            // TODO: add dropdown box with different example grammars.
+            // TODO: Add remaining example grammar to combobox.
             // P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
         }
 
