@@ -221,6 +221,7 @@
             this.Transformation_Log.Location = new System.Drawing.Point(951, 13);
             this.Transformation_Log.Multiline = true;
             this.Transformation_Log.Name = "Transformation_Log";
+            this.Transformation_Log.ReadOnly = true;
             this.Transformation_Log.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.Transformation_Log.Size = new System.Drawing.Size(1142, 1187);
             this.Transformation_Log.TabIndex = 21;

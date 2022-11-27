@@ -19,7 +19,6 @@ namespace GreibachNormalFormConverter
             P_txt.Text = "S -> BC; S -> b; B -> CD; B -> ED; B -> a; C -> BC; C -> DE; D -> a; E -> b";
             S_txt.Text = "S";
             // TODO: add dropdown box with different example grammars.
-            // TODO: obsolete derivations logging incomplete.
             // TODO: remove derivations for S in substituted derivations.
             // TODO: optimize validation.
             //P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
@@ -63,7 +62,9 @@ namespace GreibachNormalFormConverter
                     // Substitute new productions to bring them into GNF.
                     var completeProduction = SubstituteDerivations(newProductions, initGrammar);
 
-                    Transformation_Log.AppendText("The transformation was complete! The given grammar was successfully transformed into a GNF grammar, that produces the same language!");
+                    Transformation_Log.AppendText("The transformation was complete! The given grammar was successfully transformed into a GNF grammar, that produces the same language!"
+                        + Environment.NewLine
+                        + "You can see the complete grammar in the textboxes on the left!");
 
                     // Create new grammar in GNF with completed productions.
                     var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
@@ -372,7 +373,7 @@ namespace GreibachNormalFormConverter
             leftSymbols = leftSymbols.Distinct().ToList();
 
             // Exclude startVariable as it never occurs on the right. This behavior is intended and the derivations of the startVariable must not be removed.
-            leftSymbols.Remove("S");
+            leftSymbols.Remove(initGrammar.Startvariable.First());
 
             // Remove derivations where the left side never occurs on any right side, thus being useless.
             foreach (var symbol in leftSymbols)
@@ -405,11 +406,11 @@ namespace GreibachNormalFormConverter
                     removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2 + ", ");
                 }
 
-                production.RemoveAll(x => x.Item2.Contains("S_"));
+                production.RemoveAll(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
             }
 
-            removedVariableList.Add(String.Join(", " + Environment.NewLine, initGrammar.Variables.Where(x => x.Contains("S_"))));
-            initGrammar.Variables.RemoveAll(x => x.Contains("S_"));
+            removedVariableList.Add(String.Join(", " + Environment.NewLine, initGrammar.Variables.Where(x => x.Contains(initGrammar.Startvariable.First() + "_"))));
+            initGrammar.Variables.RemoveAll(x => x.Contains(initGrammar.Startvariable.First() + "_"));
 
             // Logging the changes
             LogChanges(removedVariableList.Distinct().ToList(), "obsolete variables", "removed from the newly created variables");
@@ -470,7 +471,11 @@ namespace GreibachNormalFormConverter
                 substitutedProductions.AddRange(production);
             }
 
+            // Remove derivations with old variables on the left, as they are obsolete after the substitution.
+            // Also remove the old variables and "cache" them to log later.
             substitutedProductions.RemoveAll(x => x.Item1.Length == 1 && x.Item1 != initGrammar.Startvariable.First());
+            var variablesToLog = initGrammar.Variables.Where(x => x.Length == 1 && x != initGrammar.Startvariable.First()).ToList();
+            initGrammar.Variables.RemoveAll(x => x.Length == 1 && x != initGrammar.Startvariable.First());
 
             // Logging the changes.
             var variableList = new List<string>
@@ -480,13 +485,18 @@ namespace GreibachNormalFormConverter
 
             var productionList = new List<string>();
 
-            foreach (var production in productionsToLog)
+            foreach (var production in productionsToLog.Where(x => x.Item1.Length != 1))
             {
                 productionList.Add(String.Join(", " + Environment.NewLine, production.Item1 + " -> " + production.Item2));
             }
 
             LogChanges(variableList, "variables' derivations", "not yet brought into GNF");
             LogChanges(productionList, "derivations", "substituted and brought into GNF");
+            Transformation_Log.AppendText("The following initial variables were also removed, as they and their derivations are obsolete after the subsitution: "
+                + Environment.NewLine
+                + String.Join(Environment.NewLine, variablesToLog)
+                + Environment.NewLine
+                + Environment.NewLine);
 
             return new Production(substitutedProductions);
         }
