@@ -493,7 +493,7 @@ namespace GreibachNormalFormConverter
             LogChanges(productionList, "derivations", "substituted and brought into GNF");
             Transformation_Log.AppendText("The following initial variables were also removed, as they and their derivations are obsolete after the subsitution: "
                 + Environment.NewLine
-                + String.Join(Environment.NewLine, variablesToLog)
+                + string.Join(Environment.NewLine, variablesToLog)
                 + Environment.NewLine
                 + Environment.NewLine);
 
