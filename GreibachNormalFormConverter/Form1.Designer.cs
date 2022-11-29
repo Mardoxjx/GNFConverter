@@ -273,6 +273,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(2208, 1269);
             this.Controls.Add(this.CleanInput_btn);
             this.Controls.Add(this.Combo_lable);

@@ -639,7 +639,7 @@ namespace GreibachNormalFormConverter
         // Add placeholder in productions.
         private void P_txt_Enter(object sender, EventArgs e)
         {
-            if (P_txt.Text == "Please note productions like the following: A -> x; A -> y; B -> z")
+            if (P_txt.Text == "Please note productions like the following: A -> x; A -> BC")
             {
                 P_txt.Text = "";
             }
@@ -650,7 +650,7 @@ namespace GreibachNormalFormConverter
         {
             if (P_txt.Text.Trim() == "")
             {
-                P_txt.Text = "Please note productions like the following: A -> x; A -> y; B -> z";
+                P_txt.Text = "Please note productions like the following: A -> x; A -> BC";
             }
         }
     }
