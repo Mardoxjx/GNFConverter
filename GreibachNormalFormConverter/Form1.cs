@@ -242,7 +242,7 @@ namespace GreibachNormalFormConverter
                 }
 
                 // Check if right side is in CNF.
-                if (rightSideList.Any(x => x.Length > 2) || !rightSideList.All(x => terminals.Contains(x)))
+                if (rightSideList.Any(x => x.Length > 2) || rightSideList.Any(x => x.Length == 2 && x.ToCharArray().All(y => terminals.Contains(y.ToString()))))
                 {
                     throw new ArgumentException("The right side of each production MUST not contain more than 2 symbols at most. The given grammar is not in CNF!");
                 }

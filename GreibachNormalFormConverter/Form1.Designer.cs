@@ -267,8 +267,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(2286, 1509);
+            this.ClientSize = new System.Drawing.Size(2208, 1269);
             this.Controls.Add(this.CleanInput_btn);
             this.Controls.Add(this.Combo_lable);
             this.Controls.Add(this.ComboBox);
@@ -292,7 +291,6 @@
             this.Controls.Add(this.V_txt);
             this.Controls.Add(this.V_lable);
             this.Controls.Add(this.exp_lable);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "GNFConverter";
             this.Text = "GNFConverter";
             this.ResumeLayout(false);
