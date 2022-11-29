@@ -20,7 +20,6 @@ namespace GreibachNormalFormConverter
             ComboBox.Items.Add("Grammar 3");
             ComboBox.Items.Add("Grammar 4");
             P_txt.Text = "Please note productions like the following: A -> x; A -> BC";
-            // TODO: ; asdf throws index error in productions.
         }
 
         /// <summary>
@@ -217,6 +216,12 @@ namespace GreibachNormalFormConverter
                     throw new ArgumentException("The productions MUST not be empty!");
                 }
 
+                // Check if all derivations are in correct form.
+                if (!productions.All(x => x.Contains("->")))
+                {
+                    throw new ArgumentException("The given productions are not valid! There seems to be a syntax error");
+                }
+
                 // Split production rules into left and right sides.
                 foreach (var rule in productions)
                 {
@@ -244,7 +249,7 @@ namespace GreibachNormalFormConverter
                 // Check if right side is in CNF.
                 if (rightSideList.Any(x => x.Length > 2) || rightSideList.Any(x => x.Length == 2 && x.ToCharArray().All(y => terminals.Contains(y.ToString()))))
                 {
-                    throw new ArgumentException("The right side of each production MUST not contain more than 2 symbols at most. The given grammar is not in CNF!");
+                    throw new ArgumentException("The given grammar is not in CNF!");
                 }
 
                 // Check if each rightSideSymbol is contained in the variable and/or terminal set.

@@ -67,17 +67,18 @@
             // V_lable
             // 
             this.V_lable.AutoSize = true;
-            this.V_lable.Location = new System.Drawing.Point(19, 131);
+            this.V_lable.Location = new System.Drawing.Point(22, 131);
             this.V_lable.Name = "V_lable";
-            this.V_lable.Size = new System.Drawing.Size(392, 25);
+            this.V_lable.Size = new System.Drawing.Size(457, 25);
             this.V_lable.TabIndex = 1;
-            this.V_lable.Text = "V = {                                                                  }";
+            this.V_lable.Text = "V = {                                                                            " +
+    "   }";
             // 
             // V_txt
             // 
             this.V_txt.Location = new System.Drawing.Point(81, 131);
             this.V_txt.Name = "V_txt";
-            this.V_txt.Size = new System.Drawing.Size(300, 29);
+            this.V_txt.Size = new System.Drawing.Size(374, 29);
             this.V_txt.TabIndex = 2;
             // 
             // Sig_lable
@@ -85,15 +86,16 @@
             this.Sig_lable.AutoSize = true;
             this.Sig_lable.Location = new System.Drawing.Point(19, 170);
             this.Sig_lable.Name = "Sig_lable";
-            this.Sig_lable.Size = new System.Drawing.Size(390, 25);
+            this.Sig_lable.Size = new System.Drawing.Size(460, 25);
             this.Sig_lable.TabIndex = 3;
-            this.Sig_lable.Text = "Σ = {                                                                  }";
+            this.Sig_lable.Text = "Σ =  {                                                                           " +
+    "    }";
             // 
             // Sig_txt
             // 
             this.Sig_txt.Location = new System.Drawing.Point(81, 170);
             this.Sig_txt.Name = "Sig_txt";
-            this.Sig_txt.Size = new System.Drawing.Size(300, 29);
+            this.Sig_txt.Size = new System.Drawing.Size(374, 29);
             this.Sig_txt.TabIndex = 4;
             // 
             // P_txt
@@ -102,7 +104,7 @@
             this.P_txt.Multiline = true;
             this.P_txt.Name = "P_txt";
             this.P_txt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.P_txt.Size = new System.Drawing.Size(300, 160);
+            this.P_txt.Size = new System.Drawing.Size(374, 160);
             this.P_txt.TabIndex = 6;
             this.P_txt.Enter += new System.EventHandler(this.P_txt_Enter);
             this.P_txt.Leave += new System.EventHandler(this.P_txt_Leave);
@@ -112,9 +114,10 @@
             this.P_lable.AutoSize = true;
             this.P_lable.Location = new System.Drawing.Point(19, 215);
             this.P_lable.Name = "P_lable";
-            this.P_lable.Size = new System.Drawing.Size(391, 25);
+            this.P_lable.Size = new System.Drawing.Size(461, 25);
             this.P_lable.TabIndex = 5;
-            this.P_lable.Text = "P = {                                                                  }";
+            this.P_lable.Text = "P =  {                                                                           " +
+    "    }";
             // 
             // S_lable
             // 
@@ -156,7 +159,7 @@
             this.Result_Sig_txt.Location = new System.Drawing.Point(81, 844);
             this.Result_Sig_txt.Name = "Result_Sig_txt";
             this.Result_Sig_txt.ReadOnly = true;
-            this.Result_Sig_txt.Size = new System.Drawing.Size(300, 29);
+            this.Result_Sig_txt.Size = new System.Drawing.Size(374, 29);
             this.Result_Sig_txt.TabIndex = 16;
             // 
             // Result_Sig_lable
@@ -164,9 +167,10 @@
             this.Result_Sig_lable.AutoSize = true;
             this.Result_Sig_lable.Location = new System.Drawing.Point(19, 844);
             this.Result_Sig_lable.Name = "Result_Sig_lable";
-            this.Result_Sig_lable.Size = new System.Drawing.Size(390, 25);
+            this.Result_Sig_lable.Size = new System.Drawing.Size(460, 25);
             this.Result_Sig_lable.TabIndex = 15;
-            this.Result_Sig_lable.Text = "Σ = {                                                                  }";
+            this.Result_Sig_lable.Text = "Σ = {                                                                            " +
+    "    }";
             // 
             // Result_V_txt
             // 
@@ -175,7 +179,7 @@
             this.Result_V_txt.Name = "Result_V_txt";
             this.Result_V_txt.ReadOnly = true;
             this.Result_V_txt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Result_V_txt.Size = new System.Drawing.Size(300, 160);
+            this.Result_V_txt.Size = new System.Drawing.Size(374, 160);
             this.Result_V_txt.TabIndex = 14;
             // 
             // Result_V_lable
@@ -183,9 +187,10 @@
             this.Result_V_lable.AutoSize = true;
             this.Result_V_lable.Location = new System.Drawing.Point(19, 668);
             this.Result_V_lable.Name = "Result_V_lable";
-            this.Result_V_lable.Size = new System.Drawing.Size(392, 25);
+            this.Result_V_lable.Size = new System.Drawing.Size(462, 25);
             this.Result_V_lable.TabIndex = 13;
-            this.Result_V_lable.Text = "V = {                                                                  }";
+            this.Result_V_lable.Text = "V = {                                                                            " +
+    "    }";
             // 
             // Result_S_txt
             // 
@@ -211,7 +216,7 @@
             this.Result_P_txt.Name = "Result_P_txt";
             this.Result_P_txt.ReadOnly = true;
             this.Result_P_txt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Result_P_txt.Size = new System.Drawing.Size(300, 297);
+            this.Result_P_txt.Size = new System.Drawing.Size(374, 297);
             this.Result_P_txt.TabIndex = 20;
             // 
             // Result_P_label
@@ -219,9 +224,10 @@
             this.Result_P_label.AutoSize = true;
             this.Result_P_label.Location = new System.Drawing.Point(19, 890);
             this.Result_P_label.Name = "Result_P_label";
-            this.Result_P_label.Size = new System.Drawing.Size(391, 25);
+            this.Result_P_label.Size = new System.Drawing.Size(461, 25);
             this.Result_P_label.TabIndex = 19;
-            this.Result_P_label.Text = "P = {                                                                  }";
+            this.Result_P_label.Text = "P = {                                                                            " +
+    "    }";
             // 
             // Transformation_Log
             // 
@@ -238,7 +244,7 @@
             this.ComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.ComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.ComboBox.FormattingEnabled = true;
-            this.ComboBox.Location = new System.Drawing.Point(502, 163);
+            this.ComboBox.Location = new System.Drawing.Point(569, 161);
             this.ComboBox.Name = "ComboBox";
             this.ComboBox.Size = new System.Drawing.Size(265, 32);
             this.ComboBox.TabIndex = 22;
@@ -247,7 +253,7 @@
             // Combo_lable
             // 
             this.Combo_lable.AutoSize = true;
-            this.Combo_lable.Location = new System.Drawing.Point(475, 130);
+            this.Combo_lable.Location = new System.Drawing.Point(542, 128);
             this.Combo_lable.Name = "Combo_lable";
             this.Combo_lable.Size = new System.Drawing.Size(305, 25);
             this.Combo_lable.TabIndex = 23;
@@ -265,8 +271,8 @@
             // 
             // GNFConverter
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(2208, 1269);
             this.Controls.Add(this.CleanInput_btn);
             this.Controls.Add(this.Combo_lable);
@@ -291,6 +297,7 @@
             this.Controls.Add(this.V_txt);
             this.Controls.Add(this.V_lable);
             this.Controls.Add(this.exp_lable);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GNFConverter";
             this.Text = "GNFConverter";
             this.ResumeLayout(false);
