@@ -19,11 +19,12 @@ namespace GreibachNormalFormConverter
             ComboBox.Items.Add("Grammar 2");
             ComboBox.Items.Add("Grammar 3");
             ComboBox.Items.Add("Grammar 4");
-            ComboBox.Items.Add("");
-            // TODO: Add remaining example grammar to combobox.
-            // P_txt.Text = "Please note productions like the following: A -> x; A -> BC; B -> z";
+            P_txt.Text = "Please note productions like the following: A -> x; A -> BC";
         }
 
+        /// <summary>
+        /// This method is called when the selected index of the combobox is changed.
+        /// </summary>
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch (ComboBox.SelectedIndex)
@@ -43,19 +44,30 @@ namespace GreibachNormalFormConverter
                     break;
 
                 case 2:
+                    V_txt.Text = "S, A, B, C";
+                    Sig_txt.Text = "0, 1";
+                    P_txt.Text = "S -> AB; S -> BC; A -> BA; A -> 0; B -> CC; B -> 1; C -> AB; C -> 0";
+                    S_txt.Text = "S";
                     break;
 
                 case 3:
-                    break;
-
-                case 4:
-                    Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine + Environment.NewLine;
-                    V_txt.Text = "";
-                    Sig_txt.Text = "";
-                    P_txt.Text = "";
-                    S_txt.Text = "";
+                    V_txt.Text = "S, A";
+                    Sig_txt.Text = "0, 1";
+                    P_txt.Text = "S -> AA; S -> 1; A -> AS; A -> SS; A -> 0";
+                    S_txt.Text = "S";
                     break;
             }
+        }
+
+        /// <summary>
+        /// Cleans the input fields of the UI.
+        /// </summary>
+        private void CleanInput_btn_Click(object sender, EventArgs e)
+        {
+            V_txt.Text = "";
+            Sig_txt.Text = "";
+            P_txt.Text = "";
+            S_txt.Text = "";
         }
 
         /// <summary>
@@ -121,7 +133,7 @@ namespace GreibachNormalFormConverter
         private bool ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
         {
             // Regex only allowing roman lower-/uppercase letters.
-            var regex = new Regex(@"^[a-zA-Z]+$");
+            var regex = new Regex(@"^[a-zA-Z0-9]+$");
 
             try
             {

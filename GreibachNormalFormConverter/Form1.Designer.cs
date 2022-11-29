@@ -53,6 +53,7 @@
             this.Transformation_Log = new System.Windows.Forms.TextBox();
             this.ComboBox = new System.Windows.Forms.ComboBox();
             this.Combo_lable = new System.Windows.Forms.Label();
+            this.CleanInput_btn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // exp_lable
@@ -248,11 +249,22 @@
             this.Combo_lable.TabIndex = 23;
             this.Combo_lable.Text = "Select an example grammar here:";
             // 
+            // CleanInput_btn
+            // 
+            this.CleanInput_btn.Location = new System.Drawing.Point(244, 467);
+            this.CleanInput_btn.Name = "CleanInput_btn";
+            this.CleanInput_btn.Size = new System.Drawing.Size(165, 63);
+            this.CleanInput_btn.TabIndex = 24;
+            this.CleanInput_btn.Text = "CleanInput";
+            this.CleanInput_btn.UseVisualStyleBackColor = true;
+            this.CleanInput_btn.Click += new System.EventHandler(this.CleanInput_btn_Click);
+            // 
             // GNFConverter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2170, 1351);
+            this.Controls.Add(this.CleanInput_btn);
             this.Controls.Add(this.Combo_lable);
             this.Controls.Add(this.ComboBox);
             this.Controls.Add(this.Transformation_Log);
@@ -308,6 +320,7 @@
         private System.Windows.Forms.TextBox Transformation_Log;
         private System.Windows.Forms.ComboBox ComboBox;
         private System.Windows.Forms.Label Combo_lable;
+        private System.Windows.Forms.Button CleanInput_btn;
     }
 }
 
