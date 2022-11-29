@@ -20,6 +20,7 @@ namespace GreibachNormalFormConverter
             ComboBox.Items.Add("Grammar 3");
             ComboBox.Items.Add("Grammar 4");
             P_txt.Text = "Please note productions like the following: A -> x; A -> BC";
+            // TODO: S->A->AA does not throw error. S->A->Bkaslkdk too.
         }
 
         /// <summary>
