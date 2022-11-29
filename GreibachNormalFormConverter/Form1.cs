@@ -20,6 +20,7 @@ namespace GreibachNormalFormConverter
             ComboBox.Items.Add("Grammar 3");
             ComboBox.Items.Add("Grammar 4");
             P_txt.Text = "Please note productions like the following: A -> x; A -> BC";
+            // TODO: ; asdf throws index error in productions.
         }
 
         /// <summary>
@@ -241,7 +242,7 @@ namespace GreibachNormalFormConverter
                 }
 
                 // Check if right side is in CNF.
-                if (rightSideList.Any(x => x.Length > 2))
+                if (rightSideList.Any(x => x.Length > 2) || !rightSideList.All(x => terminals.Contains(x)))
                 {
                     throw new ArgumentException("The right side of each production MUST not contain more than 2 symbols at most. The given grammar is not in CNF!");
                 }

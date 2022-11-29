@@ -155,6 +155,7 @@
             // 
             this.Result_Sig_txt.Location = new System.Drawing.Point(81, 844);
             this.Result_Sig_txt.Name = "Result_Sig_txt";
+            this.Result_Sig_txt.ReadOnly = true;
             this.Result_Sig_txt.Size = new System.Drawing.Size(300, 29);
             this.Result_Sig_txt.TabIndex = 16;
             // 
@@ -172,6 +173,7 @@
             this.Result_V_txt.Location = new System.Drawing.Point(81, 668);
             this.Result_V_txt.Multiline = true;
             this.Result_V_txt.Name = "Result_V_txt";
+            this.Result_V_txt.ReadOnly = true;
             this.Result_V_txt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.Result_V_txt.Size = new System.Drawing.Size(300, 160);
             this.Result_V_txt.TabIndex = 14;
@@ -189,6 +191,7 @@
             // 
             this.Result_S_txt.Location = new System.Drawing.Point(81, 1218);
             this.Result_S_txt.Name = "Result_S_txt";
+            this.Result_S_txt.ReadOnly = true;
             this.Result_S_txt.Size = new System.Drawing.Size(36, 29);
             this.Result_S_txt.TabIndex = 18;
             // 
@@ -206,6 +209,7 @@
             this.Result_P_txt.Location = new System.Drawing.Point(81, 890);
             this.Result_P_txt.Multiline = true;
             this.Result_P_txt.Name = "Result_P_txt";
+            this.Result_P_txt.ReadOnly = true;
             this.Result_P_txt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.Result_P_txt.Size = new System.Drawing.Size(300, 297);
             this.Result_P_txt.TabIndex = 20;
@@ -263,7 +267,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2170, 1351);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(2286, 1509);
             this.Controls.Add(this.CleanInput_btn);
             this.Controls.Add(this.Combo_lable);
             this.Controls.Add(this.ComboBox);
