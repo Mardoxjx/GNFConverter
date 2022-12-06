@@ -114,12 +114,12 @@ namespace GreibachNormalFormConverter
 
                         // Create new productions and clean them.
                         var newProductions = CreateNewProductions(initGrammar);
-                        System.Threading.Thread.Sleep(5000);
+
                         CleanNewProductions(newProductions, initGrammar);
 
                         // Substitute new productions to bring them into GNF.
                         var completeProduction = SubstituteDerivations(newProductions, initGrammar);
-                        System.Threading.Thread.Sleep(5000);
+
                         Transformation_Log.BeginInvoke((Action)delegate ()
                         {
                             Transformation_Log.AppendText("The transformation was complete! The given grammar was successfully transformed into a GNF grammar, that produces the same language!"
