@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Xml.Linq;
 
 namespace GreibachNormalFormConverter
 {
@@ -79,12 +81,13 @@ namespace GreibachNormalFormConverter
         /// </summary>
         private async void Convert_btn_Click(object sender, EventArgs e)
         {
-            // Clean UI.
+            // Configure UI.
             Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine + Environment.NewLine;
             Result_V_txt.Text = "";
             Result_Sig_txt.Text = "";
             Result_P_txt.Text = "";
             Result_S_txt.Text = "";
+            CleanInput_btn.Enabled = false;
 
             // Read input.
             List<string> initVariables = V_txt.Text.Replace(" ", "").TrimEnd(',').Split(',').ToList();
@@ -105,11 +108,11 @@ namespace GreibachNormalFormConverter
                     Transformation_Log.AppendText("The given grammar is valid. The transformation will now commence." + Environment.NewLine + Environment.NewLine);
 
                     // Create new productions and clean them.
-                    var newProductions = CreateNewProductions(initGrammar);
-                    CleanNewProductions(newProductions, initGrammar);
+                    var newProductions = await CreateNewProductions(initGrammar);
+                    await CleanNewProductions(newProductions, initGrammar);
 
                     // Substitute new productions to bring them into GNF.
-                    var completeProduction = SubstituteDerivations(newProductions, initGrammar);
+                    var completeProduction = await SubstituteDerivations(newProductions, initGrammar);
 
                     Transformation_Log.AppendText("The transformation was complete! The given grammar was successfully transformed into a GNF grammar, that produces the same language!"
                         + Environment.NewLine
@@ -118,8 +121,10 @@ namespace GreibachNormalFormConverter
                     // Create new grammar in GNF with completed productions.
                     var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
 
+                    Task.WaitAll();
+
                     // Display GNF grammar in the form.
-                    DisplayResult(gnfGrammar);
+                    await DisplayResult(gnfGrammar);
                 }
             }
         }
@@ -291,122 +296,125 @@ namespace GreibachNormalFormConverter
         /// </summary>
         /// <param name="initGrammar">The initial grammar which new productions are going to be created for.</param>
         /// <returns>A list of new Productions P_X.</returns>
-        private List<Production> CreateNewProductions(Grammar initGrammar)
+        private async Task<List<Production>> CreateNewProductions(Grammar initGrammar)
         {
-            // Group existing rules after left side.
-            ILookup<string, Tuple<string, string>> groupedRules = initGrammar.Production.Derivations.ToLookup(r => r.Item1);
-            var newRuleList = new List<List<string>>();
-            var newVariables = new List<string>();
-
-            // Iterate through each grouping to create new rules for each variable.
-            foreach (var grouping in groupedRules)
+            return await Task.Run(() =>
             {
-                var key = grouping.Key.ToString();
-                var newRules = new List<string>();
+                // Group existing rules after left side.
+                ILookup<string, Tuple<string, string>> groupedRules = initGrammar.Production.Derivations.ToLookup(r => r.Item1);
+                var newRuleList = new List<List<string>>();
+                var newVariables = new List<string>();
 
-                // Create new rules from each existing rule.
-                foreach (var rule in initGrammar.Production.Derivations)
+                // Iterate through each grouping to create new rules for each variable.
+                foreach (var grouping in groupedRules)
                 {
-                    // Every rule A -> BC creates new rule B_X -> CA_X.
-                    if (rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
+                    var key = grouping.Key.ToString();
+                    var newRules = new List<string>();
+
+                    // Create new rules from each existing rule.
+                    foreach (var rule in initGrammar.Production.Derivations)
                     {
-                        var newLeftSide = rule.Item2.First() + "_" + key;
-                        var newRightSide = rule.Item2.Last() + rule.Item1 + "_" + key;
-
-                        if (!newVariables.Contains(newLeftSide))
+                        // Every rule A -> BC creates new rule B_X -> CA_X.
+                        if (rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
                         {
-                            newVariables.Add(newLeftSide);
+                            var newLeftSide = rule.Item2.First() + "_" + key;
+                            var newRightSide = rule.Item2.Last() + rule.Item1 + "_" + key;
+
+                            if (!newVariables.Contains(newLeftSide))
+                            {
+                                newVariables.Add(newLeftSide);
+                            }
+
+                            if (!newVariables.Contains(newRightSide.Substring(1)))
+                            {
+                                newVariables.Add(newRightSide.Substring(1));
+                            }
+
+                            var newRule = newLeftSide + "->" + newRightSide;
+                            newRules.Add(newRule);
                         }
 
-                        if (!newVariables.Contains(newRightSide.Substring(1)))
+                        // Every rule X -> BC also creates new rule B_X -> C.
+                        if (rule.Item1 == key && rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
                         {
-                            newVariables.Add(newRightSide.Substring(1));
+                            var newLeftSide = rule.Item2.First() + "_" + key;
+                            var newRightSide = rule.Item2.Last();
+
+                            if (!newVariables.Contains(newLeftSide))
+                            {
+                                newVariables.Add(newLeftSide);
+                            }
+
+                            var newRule = newLeftSide + "->" + newRightSide;
+                            newRules.Add(newRule);
                         }
 
-                        var newRule = newLeftSide + "->" + newRightSide;
-                        newRules.Add(newRule);
+                        // Every rule A -> a creates new rule X -> aA_X.
+                        if (rule.Item2.Length == 1 && rule.Item2.All(x => initGrammar.Terminals.Contains(x.ToString())))
+                        {
+                            var newLeftSide = key;
+                            var newRightSide = rule.Item2 + rule.Item1 + "_" + key;
+
+                            if (!newVariables.Contains(newRightSide.Substring(1)))
+                            {
+                                newVariables.Add(newRightSide.Substring(1));
+                            }
+
+                            var newRule = newLeftSide + "->" + newRightSide;
+                            newRules.Add(newRule);
+                        }
+
+                        // Every rule X -> a is added to the new set of productions.
+                        if (rule.Item1 == key && rule.Item2.Length == 1 && rule.Item2.All(x => initGrammar.Terminals.Contains(x.ToString())))
+                        {
+                            var newRule = rule.Item1 + "->" + rule.Item2;
+                            newRules.Add(newRule);
+                        }
                     }
 
-                    // Every rule X -> BC also creates new rule B_X -> C.
-                    if (rule.Item1 == key && rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
+                    newRuleList.Add(newRules);
+                }
+
+                // Add new variables to original ones.
+                initGrammar.Variables.AddRange(newVariables);
+
+                var newProductionsList = new List<Production>();
+
+                // Create new List of Productions P_X from the new Rules.
+                foreach (var newRules in newRuleList)
+                {
+                    var tupleList = new List<Tuple<string, string>>();
+                    foreach (var rule in newRules)
                     {
-                        var newLeftSide = rule.Item2.First() + "_" + key;
-                        var newRightSide = rule.Item2.Last();
-
-                        if (!newVariables.Contains(newLeftSide))
-                        {
-                            newVariables.Add(newLeftSide);
-                        }
-
-                        var newRule = newLeftSide + "->" + newRightSide;
-                        newRules.Add(newRule);
+                        var splitItem = rule.Split(new string[] { "->" }, StringSplitOptions.None);
+                        var tuple = new Tuple<string, string>(splitItem[0], splitItem[1]);
+                        tupleList.Add(tuple);
                     }
 
-                    // Every rule A -> a creates new rule X -> aA_X.
-                    if (rule.Item2.Length == 1 && rule.Item2.All(x => initGrammar.Terminals.Contains(x.ToString())))
+                    var newProduction = new Production(tupleList);
+                    newProductionsList.Add(newProduction);
+                }
+
+                // Logging the changes.
+                LogChanges(newVariables.OrderBy(x => x).ToList(), "variables", "created");
+
+                var loggedProductions = new List<string>();
+
+                // format newProductions to string list for logging.
+                foreach (var newProduction in newProductionsList.Select(x => x.Derivations))
+                {
+                    var derivations = newProduction;
+
+                    foreach (var derivation in derivations)
                     {
-                        var newLeftSide = key;
-                        var newRightSide = rule.Item2 + rule.Item1 + "_" + key;
-
-                        if (!newVariables.Contains(newRightSide.Substring(1)))
-                        {
-                            newVariables.Add(newRightSide.Substring(1));
-                        }
-
-                        var newRule = newLeftSide + "->" + newRightSide;
-                        newRules.Add(newRule);
-                    }
-
-                    // Every rule X -> a is added to the new set of productions.
-                    if (rule.Item1 == key && rule.Item2.Length == 1 && rule.Item2.All(x => initGrammar.Terminals.Contains(x.ToString())))
-                    {
-                        var newRule = rule.Item1 + "->" + rule.Item2;
-                        newRules.Add(newRule);
+                        loggedProductions.Add(derivation.Item1 + " -> " + derivation.Item2);
                     }
                 }
 
-                newRuleList.Add(newRules);
-            }
+                LogChanges(loggedProductions.OrderBy(x => x).ToList(), "new derivations", "newly created");
 
-            // Add new variables to original ones.
-            initGrammar.Variables.AddRange(newVariables);
-
-            var newProductionsList = new List<Production>();
-
-            // Create new List of Productions P_X from the new Rules.
-            foreach (var newRules in newRuleList)
-            {
-                var tupleList = new List<Tuple<string, string>>();
-                foreach (var rule in newRules)
-                {
-                    var splitItem = rule.Split(new string[] { "->" }, StringSplitOptions.None);
-                    var tuple = new Tuple<string, string>(splitItem[0], splitItem[1]);
-                    tupleList.Add(tuple);
-                }
-
-                var newProduction = new Production(tupleList);
-                newProductionsList.Add(newProduction);
-            }
-
-            // Logging the changes.
-            LogChanges(newVariables.OrderBy(x => x).ToList(), "variables", "created");
-
-            var loggedProductions = new List<string>();
-
-            // format newProductions to string list for logging.
-            foreach (var newProduction in newProductionsList.Select(x => x.Derivations))
-            {
-                var derivations = newProduction;
-
-                foreach (var derivation in derivations)
-                {
-                    loggedProductions.Add(derivation.Item1 + " -> " + derivation.Item2);
-                }
-            }
-
-            LogChanges(loggedProductions.OrderBy(x => x).ToList(), "new derivations", "newly created");
-
-            return newProductionsList;
+                return newProductionsList;
+            });
         }
 
         /// <summary>
@@ -414,73 +422,76 @@ namespace GreibachNormalFormConverter
         /// </summary>
         /// <param name="newProductions">The newly created productions to be cleaned.</param>
         /// <param name="initGrammar">The inital grammar whose variables may be altered.</param>
-        private void CleanNewProductions(List<Production> newProductions, Grammar initGrammar)
+        private async Task CleanNewProductions(List<Production> newProductions, Grammar initGrammar)
         {
-            var firstRightSymbols = new List<string>();
-            var secondRightSymbols = new List<string>();
-            var leftSymbols = new List<string>();
-
-            var removedVariableList = new List<string>();
-            var removedDerivationList = new List<string>();
-
-            // Split each derivation in each production into left side and the first and second part of the right side.
-            foreach (var production in newProductions)
+            await Task.Run(() =>
             {
-                foreach (var derivation in production.Derivations)
+                var firstRightSymbols = new List<string>();
+                var secondRightSymbols = new List<string>();
+                var leftSymbols = new List<string>();
+
+                var removedVariableList = new List<string>();
+                var removedDerivationList = new List<string>();
+
+                // Split each derivation in each production into left side and the first and second part of the right side.
+                foreach (var production in newProductions)
                 {
-                    firstRightSymbols.Add(derivation.Item2.Substring(0, 1));
-                    secondRightSymbols.Add(derivation.Item2.Substring(1));
-                    leftSymbols.Add(derivation.Item1);
-                }
-            }
-
-            firstRightSymbols = firstRightSymbols.Distinct().ToList();
-            secondRightSymbols = secondRightSymbols.Distinct().ToList();
-            leftSymbols = leftSymbols.Distinct().ToList();
-
-            // Exclude startVariable as it never occurs on the right. This behavior is intended and the derivations of the startVariable must not be removed.
-            leftSymbols.Remove(initGrammar.Startvariable.First());
-
-            // Remove derivations where the left side never occurs on any right side, thus being useless.
-            foreach (var symbol in leftSymbols)
-            {
-                if (firstRightSymbols.All(x => x != symbol) && secondRightSymbols.All(y => y != symbol))
-                {
-                    foreach (var production in newProductions.Select(x => x.Derivations))
+                    foreach (var derivation in production.Derivations)
                     {
-                        removedVariableList.Add(symbol);
-                        var removedDerivations = production.Where(x => x.Item1 == symbol);
-                        foreach (var derivation in removedDerivations)
+                        firstRightSymbols.Add(derivation.Item2.Substring(0, 1));
+                        secondRightSymbols.Add(derivation.Item2.Substring(1));
+                        leftSymbols.Add(derivation.Item1);
+                    }
+                }
+
+                firstRightSymbols = firstRightSymbols.Distinct().ToList();
+                secondRightSymbols = secondRightSymbols.Distinct().ToList();
+                leftSymbols = leftSymbols.Distinct().ToList();
+
+                // Exclude startVariable as it never occurs on the right. This behavior is intended and the derivations of the startVariable must not be removed.
+                leftSymbols.Remove(initGrammar.Startvariable.First());
+
+                // Remove derivations where the left side never occurs on any right side, thus being useless.
+                foreach (var symbol in leftSymbols)
+                {
+                    if (firstRightSymbols.All(x => x != symbol) && secondRightSymbols.All(y => y != symbol))
+                    {
+                        foreach (var production in newProductions.Select(x => x.Derivations))
                         {
-                            removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2);
+                            removedVariableList.Add(symbol);
+                            var removedDerivations = production.Where(x => x.Item1 == symbol);
+                            foreach (var derivation in removedDerivations)
+                            {
+                                removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2);
+                            }
+
+                            production.RemoveAll(x => x.Item1 == symbol);
                         }
 
-                        production.RemoveAll(x => x.Item1 == symbol);
+                        initGrammar.Variables.Remove(symbol);
+                    }
+                }
+
+                // Remove derivations where the right side never occurs on any left side, thus being useless.
+                // The variables in question are the newly created startVariables S_X.
+                foreach (var production in newProductions.Select(x => x.Derivations))
+                {
+                    var removedStartDerivations = production.Where(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
+                    foreach (var derivation in removedStartDerivations)
+                    {
+                        removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2);
                     }
 
-                    initGrammar.Variables.Remove(symbol);
-                }
-            }
-
-            // Remove derivations where the right side never occurs on any left side, thus being useless.
-            // The variables in question are the newly created startVariables S_X.
-            foreach (var production in newProductions.Select(x => x.Derivations))
-            {
-                var removedStartDerivations = production.Where(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
-                foreach (var derivation in removedStartDerivations)
-                {
-                    removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2);
+                    production.RemoveAll(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
                 }
 
-                production.RemoveAll(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
-            }
+                removedVariableList.Add(String.Join(Environment.NewLine, initGrammar.Variables.Where(x => x.Contains(initGrammar.Startvariable.First() + "_"))));
+                initGrammar.Variables.RemoveAll(x => x.Contains(initGrammar.Startvariable.First() + "_"));
 
-            removedVariableList.Add(String.Join(Environment.NewLine, initGrammar.Variables.Where(x => x.Contains(initGrammar.Startvariable.First() + "_"))));
-            initGrammar.Variables.RemoveAll(x => x.Contains(initGrammar.Startvariable.First() + "_"));
-
-            // Logging the changes
-            LogChanges(removedVariableList.Distinct().ToList(), "obsolete variables", "removed from the newly created variables");
-            LogChanges(removedDerivationList.OrderBy(x => x).ToList(), "obsolete derivations", "removed from the newly created derivations");
+                // Logging the changes
+                LogChanges(removedVariableList.Distinct().ToList(), "obsolete variables", "removed from the newly created variables");
+                LogChanges(removedDerivationList.OrderBy(x => x).ToList(), "obsolete derivations", "removed from the newly created derivations");
+            });
         }
 
         /// <summary>
@@ -490,144 +501,158 @@ namespace GreibachNormalFormConverter
         /// <param name="newProductions">The newly created and cleaned productions whose derivations are to be substituted.</param>
         /// <param name="initGrammar">The initial grammar with now modified variables.</param>
         /// <returns>The final set of production rules in the form of a production. All derivations of this production are now in GNF.</returns>
-        private Production SubstituteDerivations(List<Production> newProductions, Grammar initGrammar)
+        private async Task<Production> SubstituteDerivations(List<Production> newProductions, Grammar initGrammar)
         {
-            // Select the newly created Variables whose derivations are still of the form A -> BC.
-            var newVariables = initGrammar.Variables.Where(x => x.Contains("_")).ToList();
-            var productionsToSubstitute = new List<Tuple<string, string>>();
-            var substitutedProductions = new List<Tuple<string, string>>();
-
-            // Select the derivations of said variables.
-            foreach (var production in newProductions)
+            return await Task.Run(() =>
             {
-                var derivationsToSubstitute = production.Derivations.Where(x => newVariables.Contains(x.Item1));
-                productionsToSubstitute.AddRange(derivationsToSubstitute);
-            }
+                // Select the newly created Variables whose derivations are still of the form A -> BC.
+                var newVariables = initGrammar.Variables.Where(x => x.Contains("_")).ToList();
+                var productionsToSubstitute = new List<Tuple<string, string>>();
+                var substitutedProductions = new List<Tuple<string, string>>();
 
-            // Substitude the first symbol of each derivation to be substituted with every possible derivation of the symbols own derivations.
-            foreach (var productionToSubstitute in productionsToSubstitute)
-            {
-                var symbolToSubstitute = productionToSubstitute.Item2.Substring(0, 1);
-                var productionsForSymbol = new List<Tuple<string, string>>();
-
+                // Select the derivations of said variables.
                 foreach (var production in newProductions)
                 {
-                    var foundProductions = production.Derivations.Where(x => x.Item1 == symbolToSubstitute);
-                    productionsForSymbol.AddRange(foundProductions);
+                    var derivationsToSubstitute = production.Derivations.Where(x => newVariables.Contains(x.Item1));
+                    productionsToSubstitute.AddRange(derivationsToSubstitute);
                 }
 
-                foreach (var productionForSymbol in productionsForSymbol)
+                // Substitude the first symbol of each derivation to be substituted with every possible derivation of the symbols own derivations.
+                foreach (var productionToSubstitute in productionsToSubstitute)
                 {
-                    var substitutedDerivation = new Tuple<string, string>
-                        (
-                            productionToSubstitute.Item1,
-                            productionForSymbol.Item2 + productionToSubstitute.Item2.Substring(1)
-                        );
+                    var symbolToSubstitute = productionToSubstitute.Item2.Substring(0, 1);
+                    var productionsForSymbol = new List<Tuple<string, string>>();
 
-                    substitutedProductions.Add(substitutedDerivation);
+                    foreach (var production in newProductions)
+                    {
+                        var foundProductions = production.Derivations.Where(x => x.Item1 == symbolToSubstitute);
+                        productionsForSymbol.AddRange(foundProductions);
+                    }
+
+                    foreach (var productionForSymbol in productionsForSymbol)
+                    {
+                        var substitutedDerivation = new Tuple<string, string>
+                            (
+                                productionToSubstitute.Item1,
+                                productionForSymbol.Item2 + productionToSubstitute.Item2.Substring(1)
+                            );
+
+                        substitutedProductions.Add(substitutedDerivation);
+                    }
                 }
-            }
 
-            var productionsToLog = substitutedProductions;
+                var productionsToLog = substitutedProductions;
 
-            // Remove the now old verions of the now substituted derivations and create a new Porduction with all the newly created and freshly substituted derivations.
-            foreach (var production in newProductions.Select(x => x.Derivations))
-            {
-                production.RemoveAll(x => x.Item1.Contains("_"));
-                substitutedProductions.AddRange(production);
-            }
+                // Remove the now old verions of the now substituted derivations and create a new Porduction with all the newly created and freshly substituted derivations.
+                foreach (var production in newProductions.Select(x => x.Derivations))
+                {
+                    production.RemoveAll(x => x.Item1.Contains("_"));
+                    substitutedProductions.AddRange(production);
+                }
 
-            // Remove derivations with old variables on the left, as they are obsolete after the substitution.
-            // Also remove the old variables and "cache" them to log later.
-            substitutedProductions.RemoveAll(x => x.Item1.Length == 1 && x.Item1 != initGrammar.Startvariable.First());
-            var variablesToLog = initGrammar.Variables.Where(x => x.Length == 1 && x != initGrammar.Startvariable.First()).ToList();
-            initGrammar.Variables.RemoveAll(x => x.Length == 1 && x != initGrammar.Startvariable.First());
+                // Remove derivations with old variables on the left, as they are obsolete after the substitution.
+                // Also remove the old variables and "cache" them to log later.
+                substitutedProductions.RemoveAll(x => x.Item1.Length == 1 && x.Item1 != initGrammar.Startvariable.First());
+                var variablesToLog = initGrammar.Variables.Where(x => x.Length == 1 && x != initGrammar.Startvariable.First()).ToList();
+                initGrammar.Variables.RemoveAll(x => x.Length == 1 && x != initGrammar.Startvariable.First());
 
-            // Logging the changes.
-            var variableList = new List<string>
-            {
-                String.Join(Environment.NewLine, newVariables)
-            };
+                // Logging the changes.
+                var variableList = new List<string>
+                {
+                    String.Join(Environment.NewLine, newVariables)
+                };
 
-            var productionList = new List<string>();
+                var productionList = new List<string>();
 
-            foreach (var production in productionsToLog.Where(x => x.Item1.Length != 1))
-            {
-                productionList.Add(String.Join(Environment.NewLine, production.Item1 + " -> " + production.Item2));
-            }
+                foreach (var production in productionsToLog.Where(x => x.Item1.Length != 1))
+                {
+                    productionList.Add(String.Join(Environment.NewLine, production.Item1 + " -> " + production.Item2));
+                }
 
-            LogChanges(variableList, "variables' derivations", "not yet brought into GNF");
-            LogChanges(productionList, "derivations", "substituted and brought into GNF");
-            Transformation_Log.AppendText("The following initial variables were also removed, as they and their derivations are obsolete after the subsitution: "
-                + Environment.NewLine
-                + string.Join(Environment.NewLine, variablesToLog)
-                + Environment.NewLine
-                + Environment.NewLine);
+                LogChanges(variableList, "variables' derivations", "not yet brought into GNF");
+                LogChanges(productionList, "derivations", "substituted and brought into GNF");
+                LogChanges(variablesToLog, "initial variables", "removed");
 
-            return new Production(substitutedProductions);
+                return new Production(substitutedProductions);
+            });
         }
+
+        private delegate Task SetResultCallback(Grammar gnfGrammar);
 
         /// <summary>
         /// Formats the variable, terminal, production and startvariable sets into strings and displays them in the dedicated textboxes on the UI.
         /// </summary>
         /// <param name="gnfGrammar">The finished grammar in GNF.</param>
-        private void DisplayResult(Grammar gnfGrammar)
+        private async Task DisplayResult(Grammar gnfGrammar)
         {
-            var splitVariables = new List<string>();
-            var splitTerminals = new List<string>();
-            var splitDerivations = new List<string>();
-
-            // Split all variables into strings appended with a comma unless it is the last variable.
-            for (int i = 0; i < gnfGrammar.Variables.Count; i++)
+            await Task.Run(() =>
             {
-                var variable = gnfGrammar.Variables[i];
-                if (i == gnfGrammar.Variables.Count - 1)
+                var splitVariables = new List<string>();
+                var splitTerminals = new List<string>();
+                var splitDerivations = new List<string>();
 
+                // Split all variables into strings appended with a comma unless it is the last variable.
+                for (int i = 0; i < gnfGrammar.Variables.Count; i++)
                 {
-                    splitVariables.Add(variable);
+                    var variable = gnfGrammar.Variables[i];
+                    if (i == gnfGrammar.Variables.Count - 1)
+
+                    {
+                        splitVariables.Add(variable);
+                    }
+                    else
+                    {
+                        splitVariables.Add(variable + ", ");
+                    }
+                }
+
+                // Split all terminals into strings appended with a comma unless it is the last terminal.
+                for (int i = 0; i < gnfGrammar.Terminals.Count; i++)
+                {
+                    var terminal = gnfGrammar.Terminals[i];
+                    if (i == gnfGrammar.Terminals.Count - 1)
+
+                    {
+                        splitTerminals.Add(terminal);
+                    }
+                    else
+                    {
+                        splitTerminals.Add(terminal + ", ");
+                    }
+                }
+
+                // Split all derivations into strings joined by "->", and appended with a comma unless it is the last derivation.
+                for (int i = 0; i < gnfGrammar.Production.Derivations.Count; i++)
+                {
+                    var derivation = gnfGrammar.Production.Derivations[i];
+
+                    if (i == gnfGrammar.Production.Derivations.Count - 1)
+                    {
+                        splitDerivations.Add(derivation.Item1 + " -> " + derivation.Item2);
+                    }
+                    else
+                    {
+                        splitDerivations.Add(derivation.Item1 + " -> " + derivation.Item2 + ", ");
+                    }
+                }
+
+                if (this.Result_V_txt.InvokeRequired || this.Result_Sig_txt.InvokeRequired || this.Result_P_txt.InvokeRequired || this.Result_S_txt.InvokeRequired)
+                {
+                    SetResultCallback d = new SetResultCallback(DisplayResult);
+                    this.Invoke(d, new object[] { gnfGrammar });
                 }
                 else
                 {
-                    splitVariables.Add(variable + ", ");
+                    // Display the variables, terminals, derivations and the startvariable in the dedicated textboxes.
+                    Result_V_txt.Text = String.Join(Environment.NewLine, splitVariables);
+                    Result_Sig_txt.Text = String.Join(Environment.NewLine, splitTerminals);
+                    Result_P_txt.Text = String.Join(Environment.NewLine, splitDerivations);
+                    Result_S_txt.Text = String.Join(Environment.NewLine, gnfGrammar.Startvariable);
                 }
-            }
-
-            // Split all terminals into strings appended with a comma unless it is the last terminal.
-            for (int i = 0; i < gnfGrammar.Terminals.Count; i++)
-            {
-                var terminal = gnfGrammar.Terminals[i];
-                if (i == gnfGrammar.Terminals.Count - 1)
-
-                {
-                    splitTerminals.Add(terminal);
-                }
-                else
-                {
-                    splitTerminals.Add(terminal + ", ");
-                }
-            }
-
-            // Split all derivations into strings joined by "->", and appended with a comma unless it is the last derivation.
-            for (int i = 0; i < gnfGrammar.Production.Derivations.Count; i++)
-            {
-                var derivation = gnfGrammar.Production.Derivations[i];
-
-                if (i == gnfGrammar.Production.Derivations.Count - 1)
-                {
-                    splitDerivations.Add(derivation.Item1 + " -> " + derivation.Item2);
-                }
-                else
-                {
-                    splitDerivations.Add(derivation.Item1 + " -> " + derivation.Item2 + ", ");
-                }
-            }
-
-            // Display the variables, terminals, derivations and the startvariable in the dedicated textboxes.
-            Result_V_txt.Text = String.Join(Environment.NewLine, splitVariables);
-            Result_Sig_txt.Text = String.Join(Environment.NewLine, splitTerminals);
-            Result_P_txt.Text = String.Join(Environment.NewLine, splitDerivations);
-            Result_S_txt.Text = String.Join(Environment.NewLine, gnfGrammar.Startvariable);
+            });
         }
+
+        private delegate void SetLogCallback(List<string> changes, string nameOfChange, string kindOfChange);
 
         /// <summary>
         /// A somewhat generic method to log changes to the transformation log.
@@ -637,11 +662,19 @@ namespace GreibachNormalFormConverter
         /// <param name="kindOfChange">What the change was e.g. removed/created/substituted.</param>
         private void LogChanges(List<string> changes, string nameOfChange, string kindOfChange)
         {
-            Transformation_Log.AppendText($"The following {nameOfChange} were {kindOfChange} during the transformation: "
-            + Environment.NewLine
-            + string.Join(Environment.NewLine, changes)
-            + Environment.NewLine
-            + Environment.NewLine);
+            if (this.Transformation_Log.InvokeRequired)
+            {
+                SetLogCallback d = new SetLogCallback(LogChanges);
+                this.Invoke(d, new object[] { changes, nameOfChange, kindOfChange });
+            }
+            else
+            {
+                this.Transformation_Log.AppendText($"The following {nameOfChange} were {kindOfChange} during the transformation: "
+                    + Environment.NewLine
+                    + string.Join(Environment.NewLine, changes)
+                    + Environment.NewLine
+                    + Environment.NewLine);
+            }
         }
 
         // Add placeholder in productions.
