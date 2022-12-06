@@ -130,8 +130,6 @@ namespace GreibachNormalFormConverter
                         // Create new grammar in GNF with completed productions.
                         var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
 
-                        Task.WaitAll();
-
                         // Display GNF grammar in the form.
                         DisplayResult(gnfGrammar);
                     }
