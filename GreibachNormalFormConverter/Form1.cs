@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GreibachNormalFormConverter
@@ -76,7 +77,7 @@ namespace GreibachNormalFormConverter
         /// This method is called when the convert button is clicked.
         /// Within this method the UI will be cleaned, the input will be read, and the methods that execute the different steps of the algorithm will be called.
         /// </summary>
-        private void Convert_btn_Click(object sender, EventArgs e)
+        private async void Convert_btn_Click(object sender, EventArgs e)
         {
             // Clean UI.
             Transformation_Log.Text = "Transformation-Log:" + Environment.NewLine + Environment.NewLine;
@@ -92,10 +93,10 @@ namespace GreibachNormalFormConverter
             List<string> initStartVariable = new List<string>() { S_txt.Text.Replace(" ", "") };
 
             // Validate input and create grammar if input is valid.
-            if (ValidateSymbols(initVariables, initTerminals, initStartVariable))
+            if (await ValidateSymbols(initVariables, initTerminals, initStartVariable))
             {
                 // Returns valid production derivations and bool stating if they are valid.
-                var productionsAreValid = ValidateProductions(initProductions, initVariables, initTerminals);
+                var productionsAreValid = await ValidateProductions(initProductions, initVariables, initTerminals);
                 if (productionsAreValid.Item2)
                 {
                     var initProduction = new Production(productionsAreValid.Item1);
@@ -121,7 +122,6 @@ namespace GreibachNormalFormConverter
                     DisplayResult(gnfGrammar);
                 }
             }
-
         }
 
         /// <summary>
@@ -132,65 +132,68 @@ namespace GreibachNormalFormConverter
         /// <param name="terminals">The terminals to be validated</param>
         /// <param name="startVariable">The startVariable to be validated.</param>
         /// <returns>True if the sets are valid, otherwise false.</returns>
-        private bool ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
+        private async Task<bool> ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
         {
-            // Regex only allowing roman lower-/uppercase letters.
-            var regex = new Regex(@"^[a-zA-Z0-9]+$");
-
-            try
+            return await Task.Run(() =>
             {
-                // Check if variables/terminals/startvariable are empty.
-                if (!(variables.Any() && terminals.Any() && startVariable.Any()))
-                {
-                    throw new ArgumentException("The Variables/Terminals/Startvariable MUST not be empty!");
-                }
+                // Regex only allowing roman lower-/uppercase letters.
+                var regex = new Regex(@"^[a-zA-Z0-9]+$");
 
-                // Check if each symbol in variables, terminals and startVariable matches the regex and contains only one letter.
-                foreach (var symbol in variables.Concat(terminals).Concat(startVariable))
+                try
                 {
-                    if (symbol.Length != 1)
+                    // Check if variables/terminals/startvariable are empty.
+                    if (!(variables.Any() && terminals.Any() && startVariable.Any()))
                     {
-                        throw new ArgumentException("Every symbol should only contain a single character!");
+                        throw new ArgumentException("The Variables/Terminals/Startvariable MUST not be empty!");
                     }
 
-                    if (!regex.IsMatch(symbol))
+                    // Check if each symbol in variables, terminals and startVariable matches the regex and contains only one letter.
+                    foreach (var symbol in variables.Concat(terminals).Concat(startVariable))
                     {
-                        throw new ArgumentException("The used symbols are not valid charactes, please only use upper and lowercase characters of the roman alphabet!");
+                        if (symbol.Length != 1)
+                        {
+                            throw new ArgumentException("Every symbol should only contain a single character!");
+                        }
+
+                        if (!regex.IsMatch(symbol))
+                        {
+                            throw new ArgumentException("The used symbols are not valid charactes, please only use upper and lowercase characters of the roman alphabet!");
+                        }
+                    }
+
+                    // Check if there is only a single startVariable.
+                    if (startVariable.Count != 1)
+                    {
+                        throw new ArgumentException("You may only specify a single startVariable!");
+                    }
+
+                    // Check if variables contain startVariable.
+                    if (!variables.Contains(startVariable.First()))
+                    {
+                        throw new ArgumentException("The set of variables MUST contain the startVariable!");
+                    }
+
+                    // Validate if each symbol only occurs once in the variables.
+                    if (variables.Count != variables.Distinct().Count())
+                    {
+                        throw new ArgumentException("Every variable may only be used once!");
+                    }
+
+                    // Check if variables and terminals are disjoint.
+                    if (variables.Any(x => terminals.Contains(x)))
+                    {
+                        throw new ArgumentException("The sets variables and terminals MUST be disjoint!");
                     }
                 }
-
-                // Check if there is only a single startVariable.
-                if (startVariable.Count != 1)
+                catch (Exception ex)
                 {
-                    throw new ArgumentException("You may only specify a single startVariable!");
+                    MessageBox.Show(ex.Message);
+                    Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of variables/terminals.");
+                    return false;
                 }
 
-                // Check if variables contain startVariable.
-                if (!variables.Contains(startVariable.First()))
-                {
-                    throw new ArgumentException("The set of variables MUST contain the startVariable!");
-                }
-
-                // Validate if each symbol only occurs once in the variables.
-                if (variables.Count != variables.Distinct().Count())
-                {
-                    throw new ArgumentException("Every variable may only be used once!");
-                }
-
-                // Check if variables and terminals are disjoint.
-                if (variables.Any(x => terminals.Contains(x)))
-                {
-                    throw new ArgumentException("The sets variables and terminals MUST be disjoint!");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of variables/terminals.");
-                return false;
-            }
-
-            return true;
+                return true;
+            });
         }
 
         /// <summary>
@@ -204,76 +207,79 @@ namespace GreibachNormalFormConverter
         /// A Tuple containing a list of derivation tuples to create the production and a bool containing the information of the initial production's validity.
         /// The list of tuples is empty and the bool false if the inital productions are invalid. Otherwise the list of tuples is filled correctly and the bool is true.
         /// </returns>
-        private Tuple<List<Tuple<string, string>>, bool> ValidateProductions(List<string> productions, List<string> variables, List<string> terminals)
+        private async Task<Tuple<List<Tuple<string, string>>, bool>> ValidateProductions(List<string> productions, List<string> variables, List<string> terminals)
         {
-            var leftSideList = new List<string>();
-            var rightSideList = new List<string>();
-            var tupleList = new List<Tuple<string, string>>();
-
-            try
+            return await Task.Run(() =>
             {
-                // Check if productions are empty.
-                if (!productions.Any())
-                {
-                    throw new ArgumentException("The productions MUST not be empty!");
-                }
+                var leftSideList = new List<string>();
+                var rightSideList = new List<string>();
+                var tupleList = new List<Tuple<string, string>>();
 
-                // Check if all derivations are in correct form.
-                if (!productions.All(x => x.Contains("->")))
+                try
                 {
-                    throw new ArgumentException("The given productions are not valid! There seems to be a syntax error");
-                }
-
-                // Split production rules into left and right sides.
-                foreach (var rule in productions)
-                {
-                    var splitRule = rule.Split(new string[] { "->" }, StringSplitOptions.None);
-                    leftSideList.Add(splitRule[0]);
-                    rightSideList.Add(splitRule[1]);
-                    tupleList.Add(new Tuple<string, string>(splitRule[0], splitRule[1]));
-                }
-
-                // Check if each left side symbol is in fact a variable.
-                foreach (var leftSideSymbol in leftSideList)
-                {
-                    if (!variables.Contains(leftSideSymbol))
+                    // Check if productions are empty.
+                    if (!productions.Any())
                     {
-                        throw new ArgumentException("The left side of each production MUST be a variable. The given grammar is not context-free!");
+                        throw new ArgumentException("The productions MUST not be empty!");
                     }
-                }
 
-                // Check if right side is empty or null.
-                if (rightSideList.Any(x => String.IsNullOrEmpty(x)))
-                {
-                    throw new ArgumentException("The right side of each production MUST not be empty!");
-                }
-
-                // Check if right side is in CNF.
-                if (rightSideList.Any(x => x.Length > 2) || rightSideList.Any(x => x.Length == 2 && x.ToCharArray().All(y => terminals.Contains(y.ToString()))))
-                {
-                    throw new ArgumentException("The given grammar is not in CNF!");
-                }
-
-                // Check if each rightSideSymbol is contained in the variable and/or terminal set.
-                foreach (var rightSide in rightSideList)
-                {
-                    foreach (var symbol in rightSide)
+                    // Check if all derivations are in correct form.
+                    if (!productions.All(x => x.Contains("->")))
                     {
-                        if (!(rightSide.All(x => variables.Contains(x.ToString())) || rightSide.All(x => terminals.Contains(x.ToString()))))
+                        throw new ArgumentException("The given productions are not valid! There seems to be a syntax error");
+                    }
+
+                    // Split production rules into left and right sides.
+                    foreach (var rule in productions)
+                    {
+                        var splitRule = rule.Split(new string[] { "->" }, StringSplitOptions.None);
+                        leftSideList.Add(splitRule[0]);
+                        rightSideList.Add(splitRule[1]);
+                        tupleList.Add(new Tuple<string, string>(splitRule[0], splitRule[1]));
+                    }
+
+                    // Check if each left side symbol is in fact a variable.
+                    foreach (var leftSideSymbol in leftSideList)
+                    {
+                        if (!variables.Contains(leftSideSymbol))
                         {
-                            throw new ArgumentException("The right side of each production MUST only contain variables and/or terminals");
+                            throw new ArgumentException("The left side of each production MUST be a variable. The given grammar is not context-free!");
+                        }
+                    }
+
+                    // Check if right side is empty or null.
+                    if (rightSideList.Any(x => String.IsNullOrEmpty(x)))
+                    {
+                        throw new ArgumentException("The right side of each production MUST not be empty!");
+                    }
+
+                    // Check if right side is in CNF.
+                    if (rightSideList.Any(x => x.Length > 2) || rightSideList.Any(x => x.Length == 2 && x.ToCharArray().All(y => terminals.Contains(y.ToString()))))
+                    {
+                        throw new ArgumentException("The given grammar is not in CNF!");
+                    }
+
+                    // Check if each rightSideSymbol is contained in the variable and/or terminal set.
+                    foreach (var rightSide in rightSideList)
+                    {
+                        foreach (var symbol in rightSide)
+                        {
+                            if (!(rightSide.All(x => variables.Contains(x.ToString())) || rightSide.All(x => terminals.Contains(x.ToString()))))
+                            {
+                                throw new ArgumentException("The right side of each production MUST only contain variables and/or terminals");
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of productions.");
-                return Tuple.Create(new List<Tuple<string, string>>(), false);
-            }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of productions.");
+                    return Tuple.Create(new List<Tuple<string, string>>(), false);
+                }
 
-            return Tuple.Create(tupleList, true);
+                return Tuple.Create(tupleList, true);
+            });
         }
 
         /// <summary>
