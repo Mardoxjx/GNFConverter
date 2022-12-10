@@ -95,46 +95,75 @@ namespace GreibachNormalFormConverter
             List<string> initProductions = P_txt.Text.Replace(" ", "").TrimEnd(';').Split(';').ToList();
             List<string> initStartVariable = new List<string>() { S_txt.Text.Replace(" ", "") };
 
-            await Task.Run(() =>
+            if (StepByStep_checkBox.Checked)
             {
-                // Validate input and create grammar if input is valid.
-                if (ValidateSymbols(initVariables, initTerminals, initStartVariable))
+                await Task.Run(() =>
                 {
-                    // Returns valid production derivations and bool stating if they are valid.
-                    var productionsAreValid = ValidateProductions(initProductions, initVariables, initTerminals);
-                    if (productionsAreValid.Item2)
+                    this.BeginInvoke((Action)delegate ()
                     {
-                        var initProduction = new Production(productionsAreValid.Item1);
-                        Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
+                        var popupForm = new Form();
+                        popupForm.ShowDialog(this);
+                    });
+                    
+                });
+            }
+            else
+            {
+                await Task.Run(() =>
+                {
+                    DirectExecution(initVariables, initTerminals, initProductions, initStartVariable);
+                });
+            }
 
-                        Transformation_Log.BeginInvoke((Action)delegate ()
-                        {
-                            Transformation_Log.AppendText("The given grammar is valid. The transformation will now commence." + Environment.NewLine + Environment.NewLine);
-                        });
+            CleanInput_btn.Enabled = true;
+        }
 
-                        // Create new productions and clean them.
-                        var newProductions = CreateNewProductions(initGrammar);
+        /// <summary>
+        /// If Step by Step execution is not checked, the algorithm will be executed directly.
+        /// </summary>
+        /// <param name="initVariables">The variables of the given grammar</param>
+        /// <param name="initTerminals">The terminals of the given </param>
+        /// <param name="initProductions">The Productions of the given </param>
+        /// <param name="initStartVariable">The startVariable of the given </param>
+        private void DirectExecution(List<string> initVariables, List<string> initTerminals, List<string> initProductions, List<string> initStartVariable)
+        {
+            // Validate input and create grammar if input is valid.
+            if (ValidateSymbols(initVariables, initTerminals, initStartVariable))
+            {
+                // Returns valid production derivations and bool stating if they are valid.
+                var productionsAreValid = ValidateProductions(initProductions, initVariables, initTerminals);
+                if (productionsAreValid.Item2)
+                {
+                    var initProduction = new Production(productionsAreValid.Item1);
+                    Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
 
-                        CleanNewProductions(newProductions, initGrammar);
+                    Transformation_Log.BeginInvoke((Action)delegate ()
+                    {
+                        Transformation_Log.AppendText("The given grammar is valid. The transformation will now commence." + Environment.NewLine + Environment.NewLine);
+                    });
 
-                        // Substitute new productions to bring them into GNF.
-                        var completeProduction = SubstituteDerivations(newProductions, initGrammar);
+                    // Create new productions and clean them.
+                    var newProductions = CreateNewProductions(initGrammar);
 
-                        Transformation_Log.BeginInvoke((Action)delegate ()
-                        {
-                            Transformation_Log.AppendText("The transformation was complete! The given grammar was successfully transformed into a GNF grammar, that produces the same language!"
-                            + Environment.NewLine
-                            + "You can see the complete grammar in the textboxes on the left!");
-                        });
+                    CleanNewProductions(newProductions, initGrammar);
 
-                        // Create new grammar in GNF with completed productions.
-                        var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
+                    // Substitute new productions to bring them into GNF.
+                    var completeProduction = SubstituteDerivations(newProductions, initGrammar);
 
-                        // Display GNF grammar in the form.
-                        DisplayResult(gnfGrammar);
-                    }
+                    Transformation_Log.BeginInvoke((Action)delegate ()
+                    {
+                        Transformation_Log.AppendText("The transformation was complete! The given grammar was successfully transformed into a GNF grammar, that produces the same language!"
+                        + Environment.NewLine
+                        + "You can see the complete grammar in the textboxes on the left!");
+                    });
+
+                    // Create new grammar in GNF with completed productions.
+                    var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
+
+                    // Display GNF grammar in the form.
+                    DisplayResult(gnfGrammar);
                 }
-            });
+            }
         }
 
         /// <summary>

@@ -54,6 +54,7 @@
             this.ComboBox = new System.Windows.Forms.ComboBox();
             this.Combo_lable = new System.Windows.Forms.Label();
             this.CleanInput_btn = new System.Windows.Forms.Button();
+            this.StepByStep_checkBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // exp_lable
@@ -130,7 +131,7 @@
             // 
             // Convert_btn
             // 
-            this.Convert_btn.Location = new System.Drawing.Point(18, 467);
+            this.Convert_btn.Location = new System.Drawing.Point(23, 504);
             this.Convert_btn.Name = "Convert_btn";
             this.Convert_btn.Size = new System.Drawing.Size(173, 63);
             this.Convert_btn.TabIndex = 9;
@@ -261,7 +262,7 @@
             // 
             // CleanInput_btn
             // 
-            this.CleanInput_btn.Location = new System.Drawing.Point(244, 467);
+            this.CleanInput_btn.Location = new System.Drawing.Point(290, 504);
             this.CleanInput_btn.Name = "CleanInput_btn";
             this.CleanInput_btn.Size = new System.Drawing.Size(165, 63);
             this.CleanInput_btn.TabIndex = 24;
@@ -269,12 +270,23 @@
             this.CleanInput_btn.UseVisualStyleBackColor = true;
             this.CleanInput_btn.Click += new System.EventHandler(this.CleanInput_btn_Click);
             // 
+            // StepByStep_checkBox
+            // 
+            this.StepByStep_checkBox.AutoSize = true;
+            this.StepByStep_checkBox.Location = new System.Drawing.Point(27, 467);
+            this.StepByStep_checkBox.Name = "StepByStep_checkBox";
+            this.StepByStep_checkBox.Size = new System.Drawing.Size(240, 29);
+            this.StepByStep_checkBox.TabIndex = 26;
+            this.StepByStep_checkBox.Text = "Step by Step execution";
+            this.StepByStep_checkBox.UseVisualStyleBackColor = true;
+            // 
             // GNFConverter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(168F, 168F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(2208, 1269);
+            this.Controls.Add(this.StepByStep_checkBox);
             this.Controls.Add(this.CleanInput_btn);
             this.Controls.Add(this.Combo_lable);
             this.Controls.Add(this.ComboBox);
@@ -332,6 +344,7 @@
         private System.Windows.Forms.ComboBox ComboBox;
         private System.Windows.Forms.Label Combo_lable;
         private System.Windows.Forms.Button CleanInput_btn;
+        private System.Windows.Forms.CheckBox StepByStep_checkBox;
     }
 }
 
