@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GreibachNormalFormConverter
@@ -20,12 +14,13 @@ namespace GreibachNormalFormConverter
         public Grammar Grammar { get; set; }
         public List<Production> NewProductions { get; set; }
         public Production FinalProduction { get; set; }
+        public string CurrentStep { get; set; }
 
         public StepByStepForm(
-            GNFConverter gnfConverter, 
-            List<string> initVariables, 
-            List<string> initTerminals, 
-            List<string> initProductions, 
+            GNFConverter gnfConverter,
+            List<string> initVariables,
+            List<string> initTerminals,
+            List<string> initProductions,
             List<string> startVariable)
         {
             InitializeComponent();
@@ -41,10 +36,14 @@ namespace GreibachNormalFormConverter
             Clean_btn.Enabled = false;
             Substitute_btn.Enabled = false;
             Finish_btn.Enabled = false;
+            Help_btn.Enabled = false;
         }
 
         private void Validation_btn_Click(object sender, EventArgs e)
         {
+            Help_btn.Enabled = true;
+            CurrentStep = "Validate";
+
             if (GNFConverter.ValidateSymbols(this.StartVariable, this.Terminals, this.StartVariable))
             {
                 var productionsAreValid = GNFConverter.ValidateProductions(InitProductions, Variables, Terminals);
@@ -54,10 +53,7 @@ namespace GreibachNormalFormConverter
                     var initProduction = new Production(productionsAreValid.Item1);
                     Grammar = new Grammar(Variables, Terminals, initProduction, StartVariable);
 
-                    Transformation_Log.BeginInvoke((Action)delegate ()
-                    {
-                        Transformation_Log.Text = "The given grammar is valid. You may continue.";
-                    });
+                    Transformation_Log.Text = "The given grammar is valid. You may continue. For more detailed Information use the button below or check the transformation_log box after you are done.";
                 }
             }
 
@@ -67,7 +63,11 @@ namespace GreibachNormalFormConverter
 
         private void Creation_btn_Click(object sender, EventArgs e)
         {
+            CurrentStep = "Create";
+
             NewProductions = GNFConverter.CreateNewProductions(Grammar);
+
+            Transformation_Log.Text = "New Productions were created. For more detailed Information use the button below or check the transformation_log box after you are done.";
 
             Creation_btn.Enabled = false;
             Clean_btn.Enabled = true;
@@ -75,7 +75,11 @@ namespace GreibachNormalFormConverter
 
         private void Clean_btn_Click(object sender, EventArgs e)
         {
+            CurrentStep = "Clean";
+
             GNFConverter.CleanNewProductions(NewProductions, Grammar);
+
+            Transformation_Log.Text = "The newly created Productions were cleaned properly. For more detailed Information use the button below or check the transformation_log box after you are done.";
 
             Clean_btn.Enabled = false;
             Substitute_btn.Enabled = true;
@@ -83,6 +87,11 @@ namespace GreibachNormalFormConverter
 
         private void Substitute_btn_Click(object sender, EventArgs e)
         {
+            CurrentStep = "Substitute";
+
+            Transformation_Log.Text = "Derivations that were not yet in GNF were substituted." + Environment.NewLine +
+                "For more detailed Information use the button below or check the transformation_log box after you are done.";
+
             FinalProduction = GNFConverter.SubstituteDerivations(NewProductions, Grammar);
 
             Substitute_btn.Enabled = false;
@@ -91,7 +100,32 @@ namespace GreibachNormalFormConverter
 
         private void Help_btn_Click(object sender, EventArgs e)
         {
-
+            switch (CurrentStep)
+            {
+                case "Validate":
+                    MessageBox.Show("During this step the input grammar will be fully validated. This means that the tool will check if all symbols used are valid. It will also check if the grammar is in CNF and " +
+                        "if the derivations of the productions are valid and logically correct.", "Validate");
+                    break;
+                case "Create":
+                    MessageBox.Show("This step will create new Derivations by applying the following rules for each variable \"X\" of the grammar:" + Environment.NewLine + Environment.NewLine +
+                        "1. Every rule A -> BC creates a new rule B_X -> CA_X." + Environment.NewLine +
+                        "2. Every rule X -> BC also creates a new rule B_X -> C." + Environment.NewLine +
+                        "3. Every rule A -> a creates a new rule X -> aA_X." + Environment.NewLine +
+                        "4. Every rule X -> a is added to the new set of productions.", "Create");
+                    break;
+                case "Clean":
+                    MessageBox.Show("During this step the tool will remove all unnecessary derivations from the newly created derivations in the prior step." + Environment.NewLine +
+                        "This concerns all derivations that contain symbols that only ever occur on either the left or the right side. They will be removed as the will never be able to produce anything.", "Clean");
+                    break;
+                case "Substitute":
+                    MessageBox.Show("As of right now, there are still derivations that are not in GNF." + Environment.NewLine +
+                        "The derivations in question are all newly created and cleaned derivations of the newly created variables." +
+                        "The derivations of these new derivations start with old variables." +
+                        " Meanwhile all the derivations of the original variables are in GNF." +
+                        "By substituting the derivations that are not yet in GNF with all derivations of the original variable at the beginning on the left side of said variable, " +
+                        "it is possible to bring all derivations into GNF.", "Substitute");
+                    break;
+            }
         }
 
         private void Finish_btn_Click(object sender, EventArgs e)
@@ -108,9 +142,19 @@ namespace GreibachNormalFormConverter
             this.Close();
         }
 
-        private void Abort_btn_Click(object sender, EventArgs e)
+        private void Cancel_btn_Click(object sender, EventArgs e)
         {
+            GNFConverter.Transformation_Log.Text = "The step by step execution was canceled!";
+            this.Close();
 
+            GNFConverter.V_txt.Text = "";
+            GNFConverter.Sig_txt.Text = "";
+            GNFConverter.P_txt.Text = "";
+            GNFConverter.S_txt.Text = "";
+            GNFConverter.Result_V_txt.Text = "";
+            GNFConverter.Result_Sig_txt.Text = "";
+            GNFConverter.Result_P_txt.Text = "";
+            GNFConverter.Result_S_txt.Text = "";
         }
     }
 }

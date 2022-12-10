@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Xml.Linq;
 
 namespace GreibachNormalFormConverter
 {
@@ -160,7 +159,10 @@ namespace GreibachNormalFormConverter
                     // Display GNF grammar in the form.
                     DisplayResult(gnfGrammar);
 
-                    CleanInput_btn.Enabled = true;
+                    CleanInput_btn.BeginInvoke((Action)delegate ()
+                    {
+                        CleanInput_btn.Enabled = true;
+                    });
                 }
             }
         }
@@ -293,6 +295,12 @@ namespace GreibachNormalFormConverter
                 if (rightSideList.Any(x => x.Length > 2) || rightSideList.Any(x => x.Length == 2 && x.ToCharArray().All(y => terminals.Contains(y.ToString()))))
                 {
                     throw new ArgumentException("The given grammar is not in CNF!");
+                }
+
+                //Check for duplicate derivations.
+                if (productions.Count != productions.Distinct().Count())
+                {
+                    throw new ArgumentException("There are duplicate derivations!");
                 }
 
                 // Check if each rightSideSymbol is contained in the variable and/or terminal set.

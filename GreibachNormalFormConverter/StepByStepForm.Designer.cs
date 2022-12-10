@@ -36,7 +36,7 @@
             this.Creation_btn = new System.Windows.Forms.Button();
             this.Validation_btn = new System.Windows.Forms.Button();
             this.Finish_btn = new System.Windows.Forms.Button();
-            this.Abort_btn = new System.Windows.Forms.Button();
+            this.Cancel_btn = new System.Windows.Forms.Button();
             this.Help_btn = new System.Windows.Forms.Button();
             this.StepByStep_groupBox.SuspendLayout();
             this.SuspendLayout();
@@ -48,18 +48,18 @@
             this.Heading_lablel.Name = "Heading_lablel";
             this.Heading_lablel.Size = new System.Drawing.Size(607, 63);
             this.Heading_lablel.TabIndex = 0;
-            this.Heading_lablel.Text = "Current step: Validation";
+            this.Heading_lablel.Text = "Step by step execution";
             // 
             // Transformation_Log
             // 
-            this.Transformation_Log.Location = new System.Drawing.Point(685, 22);
+            this.Transformation_Log.Location = new System.Drawing.Point(654, 22);
             this.Transformation_Log.Multiline = true;
             this.Transformation_Log.Name = "Transformation_Log";
             this.Transformation_Log.ReadOnly = true;
             this.Transformation_Log.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Transformation_Log.Size = new System.Drawing.Size(823, 765);
+            this.Transformation_Log.Size = new System.Drawing.Size(854, 765);
             this.Transformation_Log.TabIndex = 22;
-            this.Transformation_Log.Text = "Transformation-Log: \r\nYou can start the step by step execution by clicking on the" +
+            this.Transformation_Log.Text = "Transformation_Log: \r\nYou can start the step by step execution by clicking on the" +
     " buttons on the left.\r\n";
             // 
             // StepByStep_groupBox
@@ -91,7 +91,7 @@
             this.Clean_btn.Name = "Clean_btn";
             this.Clean_btn.Size = new System.Drawing.Size(271, 77);
             this.Clean_btn.TabIndex = 2;
-            this.Clean_btn.Text = "Clean";
+            this.Clean_btn.Text = "clean";
             this.Clean_btn.UseVisualStyleBackColor = true;
             this.Clean_btn.Click += new System.EventHandler(this.Clean_btn_Click);
             // 
@@ -125,15 +125,15 @@
             this.Finish_btn.UseVisualStyleBackColor = true;
             this.Finish_btn.Click += new System.EventHandler(this.Finish_btn_Click);
             // 
-            // Abort_btn
+            // Cancel_btn
             // 
-            this.Abort_btn.Location = new System.Drawing.Point(359, 710);
-            this.Abort_btn.Name = "Abort_btn";
-            this.Abort_btn.Size = new System.Drawing.Size(271, 77);
-            this.Abort_btn.TabIndex = 25;
-            this.Abort_btn.Text = "Cancel";
-            this.Abort_btn.UseVisualStyleBackColor = true;
-            this.Abort_btn.Click += new System.EventHandler(this.Abort_btn_Click);
+            this.Cancel_btn.Location = new System.Drawing.Point(359, 710);
+            this.Cancel_btn.Name = "Cancel_btn";
+            this.Cancel_btn.Size = new System.Drawing.Size(271, 77);
+            this.Cancel_btn.TabIndex = 25;
+            this.Cancel_btn.Text = "Cancel";
+            this.Cancel_btn.UseVisualStyleBackColor = true;
+            this.Cancel_btn.Click += new System.EventHandler(this.Cancel_btn_Click);
             // 
             // Help_btn
             // 
@@ -152,7 +152,7 @@
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1520, 864);
             this.Controls.Add(this.Help_btn);
-            this.Controls.Add(this.Abort_btn);
+            this.Controls.Add(this.Cancel_btn);
             this.Controls.Add(this.Finish_btn);
             this.Controls.Add(this.StepByStep_groupBox);
             this.Controls.Add(this.Transformation_Log);
@@ -175,7 +175,7 @@
         private System.Windows.Forms.Button Creation_btn;
         private System.Windows.Forms.Button Validation_btn;
         private System.Windows.Forms.Button Finish_btn;
-        private System.Windows.Forms.Button Abort_btn;
+        private System.Windows.Forms.Button Cancel_btn;
         private System.Windows.Forms.Button Help_btn;
     }
 }
