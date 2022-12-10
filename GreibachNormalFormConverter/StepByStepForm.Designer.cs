@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StepByStepForm));
             this.Heading_lablel = new System.Windows.Forms.Label();
             this.Transformation_Log = new System.Windows.Forms.TextBox();
             this.StepByStep_groupBox = new System.Windows.Forms.GroupBox();
@@ -157,6 +158,7 @@
             this.Controls.Add(this.StepByStep_groupBox);
             this.Controls.Add(this.Transformation_Log);
             this.Controls.Add(this.Heading_lablel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "StepByStepForm";
             this.Text = "StepByStepForm";
             this.StepByStep_groupBox.ResumeLayout(false);
