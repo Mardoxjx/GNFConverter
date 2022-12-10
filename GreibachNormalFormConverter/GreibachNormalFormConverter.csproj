@@ -51,16 +51,22 @@
   <ItemGroup>
     <Compile Include="Grammar.cs" />
     <Compile Include="Production.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="GNFConverterForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="GNFConverterForm.Designer.cs">
+      <DependentUpon>GNFConverterForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="StepByStepForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StepByStepForm.Designer.cs">
+      <DependentUpon>StepByStepForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="GNFConverterForm.resx">
+      <DependentUpon>GNFConverterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -71,6 +77,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="StepByStepForm.resx">
+      <DependentUpon>StepByStepForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

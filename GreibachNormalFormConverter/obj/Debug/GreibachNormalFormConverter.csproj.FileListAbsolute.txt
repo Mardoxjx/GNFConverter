@@ -20,3 +20,4 @@ D:\Projektarbeit\GNFConverter\GreibachNormalFormConverter\obj\Debug\GreibachNorm
 D:\Projektarbeit\GNFConverter\GreibachNormalFormConverter\obj\Debug\GreibachNormalFormConverter.csproj.CoreCompileInputs.cache
 D:\Projektarbeit\GNFConverter\GreibachNormalFormConverter\obj\Debug\GreibachNormalFormConverter.exe
 D:\Projektarbeit\GNFConverter\GreibachNormalFormConverter\obj\Debug\GreibachNormalFormConverter.pdb
+Z:\Projektarbeit GNF\GreibachNormalFormConverter\GreibachNormalFormConverter\obj\Debug\GreibachNormalFormConverter.StepByStepForm.resources

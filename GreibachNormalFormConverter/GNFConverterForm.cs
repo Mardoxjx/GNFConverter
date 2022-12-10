@@ -101,10 +101,9 @@ namespace GreibachNormalFormConverter
                 {
                     this.BeginInvoke((Action)delegate ()
                     {
-                        var popupForm = new Form();
-                        popupForm.ShowDialog(this);
+                        var popupForm = new StepByStepForm(this, initVariables, initTerminals, initProductions, initStartVariable);
+                        popupForm.Show(this);
                     });
-                    
                 });
             }
             else
@@ -114,8 +113,6 @@ namespace GreibachNormalFormConverter
                     DirectExecution(initVariables, initTerminals, initProductions, initStartVariable);
                 });
             }
-
-            CleanInput_btn.Enabled = true;
         }
 
         /// <summary>
@@ -162,6 +159,8 @@ namespace GreibachNormalFormConverter
 
                     // Display GNF grammar in the form.
                     DisplayResult(gnfGrammar);
+
+                    CleanInput_btn.Enabled = true;
                 }
             }
         }
@@ -174,7 +173,7 @@ namespace GreibachNormalFormConverter
         /// <param name="terminals">The terminals to be validated</param>
         /// <param name="startVariable">The startVariable to be validated.</param>
         /// <returns>True if the sets are valid, otherwise false.</returns>
-        private bool ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
+        public bool ValidateSymbols(List<string> variables, List<string> terminals, List<string> startVariable)
         {
             // Regex only allowing roman lower-/uppercase letters.
             var regex = new Regex(@"^[a-zA-Z0-9]+$");
@@ -246,7 +245,7 @@ namespace GreibachNormalFormConverter
         /// A Tuple containing a list of derivation tuples to create the production and a bool containing the information of the initial production's validity.
         /// The list of tuples is empty and the bool false if the inital productions are invalid. Otherwise the list of tuples is filled correctly and the bool is true.
         /// </returns>
-        private Tuple<List<Tuple<string, string>>, bool> ValidateProductions(List<string> productions, List<string> variables, List<string> terminals)
+        public Tuple<List<Tuple<string, string>>, bool> ValidateProductions(List<string> productions, List<string> variables, List<string> terminals)
         {
             var leftSideList = new List<string>();
             var rightSideList = new List<string>();
@@ -327,7 +326,7 @@ namespace GreibachNormalFormConverter
         /// </summary>
         /// <param name="initGrammar">The initial grammar which new productions are going to be created for.</param>
         /// <returns>A list of new Productions P_X.</returns>
-        private List<Production> CreateNewProductions(Grammar initGrammar)
+        public List<Production> CreateNewProductions(Grammar initGrammar)
         {
             // Group existing rules after left side.
             ILookup<string, Tuple<string, string>> groupedRules = initGrammar.Production.Derivations.ToLookup(r => r.Item1);
@@ -450,7 +449,7 @@ namespace GreibachNormalFormConverter
         /// </summary>
         /// <param name="newProductions">The newly created productions to be cleaned.</param>
         /// <param name="initGrammar">The inital grammar whose variables may be altered.</param>
-        private void CleanNewProductions(List<Production> newProductions, Grammar initGrammar)
+        public void CleanNewProductions(List<Production> newProductions, Grammar initGrammar)
         {
             var firstRightSymbols = new List<string>();
             var secondRightSymbols = new List<string>();
@@ -526,7 +525,7 @@ namespace GreibachNormalFormConverter
         /// <param name="newProductions">The newly created and cleaned productions whose derivations are to be substituted.</param>
         /// <param name="initGrammar">The initial grammar with now modified variables.</param>
         /// <returns>The final set of production rules in the form of a production. All derivations of this production are now in GNF.</returns>
-        private Production SubstituteDerivations(List<Production> newProductions, Grammar initGrammar)
+        public Production SubstituteDerivations(List<Production> newProductions, Grammar initGrammar)
         {
             // Select the newly created Variables whose derivations are still of the form A -> BC.
             var newVariables = initGrammar.Variables.Where(x => x.Contains("_")).ToList();
@@ -605,7 +604,7 @@ namespace GreibachNormalFormConverter
         /// Formats the variable, terminal, production and startvariable sets into strings and displays them in the dedicated textboxes on the UI.
         /// </summary>
         /// <param name="gnfGrammar">The finished grammar in GNF.</param>
-        private void DisplayResult(Grammar gnfGrammar)
+        public void DisplayResult(Grammar gnfGrammar)
         {
             var splitVariables = new List<string>();
             var splitTerminals = new List<string>();

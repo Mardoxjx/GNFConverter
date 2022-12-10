@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="exp_lable.Text" xml:space="preserve">
+  <data name="exp_label.Text" xml:space="preserve">
     <value>Please enter a valid context-free Grammer in CNF G=(V,Σ,P,S) where V is a set of symbols called variables, Σ is a set called terminal Symbols, P is a set of productions and S is the start variable set.
 (Please seperate Symbols with commas and productions with semicolons!):
 
