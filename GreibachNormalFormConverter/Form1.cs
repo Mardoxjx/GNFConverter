@@ -105,7 +105,7 @@ namespace GreibachNormalFormConverter
                     if (productionsAreValid.Item2)
                     {
                         var initProduction = new Production(productionsAreValid.Item1);
-                        Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable);
+                        Grammar initGrammar = new Grammar(initVariables, initTerminals, initProduction, initStartVariable, this);
 
                         Transformation_Log.BeginInvoke((Action)delegate ()
                         {
@@ -113,7 +113,7 @@ namespace GreibachNormalFormConverter
                         });
 
                         // Create new productions and clean them.
-                        var newProductions = CreateNewProductions(initGrammar);
+                        var newProductions = initGrammar.CreateNewProductions();
 
                         CleanNewProductions(newProductions, initGrammar);
 
@@ -128,7 +128,7 @@ namespace GreibachNormalFormConverter
                         });
 
                         // Create new grammar in GNF with completed productions.
-                        var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable);
+                        var gnfGrammar = new Grammar(initVariables, initTerminals, completeProduction, initStartVariable, this);
 
                         // Display GNF grammar in the form.
                         DisplayResult(gnfGrammar);
@@ -287,133 +287,6 @@ namespace GreibachNormalFormConverter
             }
 
             return Tuple.Create(tupleList, true);
-        }
-
-        /// <summary>
-        /// Creates new Productions after the following rules:
-        ///     1. Every rule A -> BC creates new rule B_X -> CA_X.
-        ///     2. Every rule X -> BC also creates new rule B_X -> C.
-        ///     3. Every rule A -> a creates new rule X -> aA_X.
-        ///     4. Every rule X -> a is added to the new set of productions.
-        /// </summary>
-        /// <param name="initGrammar">The initial grammar which new productions are going to be created for.</param>
-        /// <returns>A list of new Productions P_X.</returns>
-        private List<Production> CreateNewProductions(Grammar initGrammar)
-        {
-            // Group existing rules after left side.
-            ILookup<string, Tuple<string, string>> groupedRules = initGrammar.Production.Derivations.ToLookup(r => r.Item1);
-            var newRuleList = new List<List<string>>();
-            var newVariables = new List<string>();
-
-            // Iterate through each grouping to create new rules for each variable.
-            foreach (var grouping in groupedRules)
-            {
-                var key = grouping.Key.ToString();
-                var newRules = new List<string>();
-
-                // Create new rules from each existing rule.
-                foreach (var rule in initGrammar.Production.Derivations)
-                {
-                    // Every rule A -> BC creates new rule B_X -> CA_X.
-                    if (rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
-                    {
-                        var newLeftSide = rule.Item2.First() + "_" + key;
-                        var newRightSide = rule.Item2.Last() + rule.Item1 + "_" + key;
-
-                        if (!newVariables.Contains(newLeftSide))
-                        {
-                            newVariables.Add(newLeftSide);
-                        }
-
-                        if (!newVariables.Contains(newRightSide.Substring(1)))
-                        {
-                            newVariables.Add(newRightSide.Substring(1));
-                        }
-
-                        var newRule = newLeftSide + "->" + newRightSide;
-                        newRules.Add(newRule);
-                    }
-
-                    // Every rule X -> BC also creates new rule B_X -> C.
-                    if (rule.Item1 == key && rule.Item2.Length == 2 && rule.Item2.All(x => initGrammar.Variables.Contains(x.ToString())))
-                    {
-                        var newLeftSide = rule.Item2.First() + "_" + key;
-                        var newRightSide = rule.Item2.Last();
-
-                        if (!newVariables.Contains(newLeftSide))
-                        {
-                            newVariables.Add(newLeftSide);
-                        }
-
-                        var newRule = newLeftSide + "->" + newRightSide;
-                        newRules.Add(newRule);
-                    }
-
-                    // Every rule A -> a creates new rule X -> aA_X.
-                    if (rule.Item2.Length == 1 && rule.Item2.All(x => initGrammar.Terminals.Contains(x.ToString())))
-                    {
-                        var newLeftSide = key;
-                        var newRightSide = rule.Item2 + rule.Item1 + "_" + key;
-
-                        if (!newVariables.Contains(newRightSide.Substring(1)))
-                        {
-                            newVariables.Add(newRightSide.Substring(1));
-                        }
-
-                        var newRule = newLeftSide + "->" + newRightSide;
-                        newRules.Add(newRule);
-                    }
-
-                    // Every rule X -> a is added to the new set of productions.
-                    if (rule.Item1 == key && rule.Item2.Length == 1 && rule.Item2.All(x => initGrammar.Terminals.Contains(x.ToString())))
-                    {
-                        var newRule = rule.Item1 + "->" + rule.Item2;
-                        newRules.Add(newRule);
-                    }
-                }
-
-                newRuleList.Add(newRules);
-            }
-
-            // Add new variables to original ones.
-            initGrammar.Variables.AddRange(newVariables);
-
-            var newProductionsList = new List<Production>();
-
-            // Create new List of Productions P_X from the new Rules.
-            foreach (var newRules in newRuleList)
-            {
-                var tupleList = new List<Tuple<string, string>>();
-                foreach (var rule in newRules)
-                {
-                    var splitItem = rule.Split(new string[] { "->" }, StringSplitOptions.None);
-                    var tuple = new Tuple<string, string>(splitItem[0], splitItem[1]);
-                    tupleList.Add(tuple);
-                }
-
-                var newProduction = new Production(tupleList);
-                newProductionsList.Add(newProduction);
-            }
-
-            // Logging the changes.
-            LogChanges(newVariables.OrderBy(x => x).ToList(), "variables", "created");
-
-            var loggedProductions = new List<string>();
-
-            // format newProductions to string list for logging.
-            foreach (var newProduction in newProductionsList.Select(x => x.Derivations))
-            {
-                var derivations = newProduction;
-
-                foreach (var derivation in derivations)
-                {
-                    loggedProductions.Add(derivation.Item1 + " -> " + derivation.Item2);
-                }
-            }
-
-            LogChanges(loggedProductions.OrderBy(x => x).ToList(), "new derivations", "newly created");
-
-            return newProductionsList;
         }
 
         /// <summary>
@@ -650,7 +523,7 @@ namespace GreibachNormalFormConverter
         /// <param name="changes">The changes that happend in the form of a string List.</param>
         /// <param name="nameOfChange">The name of what was changed e.g. variables/terminals/derivations.</param>
         /// <param name="kindOfChange">What the change was e.g. removed/created/substituted.</param>
-        private void LogChanges(List<string> changes, string nameOfChange, string kindOfChange)
+        public void LogChanges(List<string> changes, string nameOfChange, string kindOfChange)
         {
             if (this.Transformation_Log.InvokeRequired)
             {
