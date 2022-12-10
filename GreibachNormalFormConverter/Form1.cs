@@ -115,7 +115,7 @@ namespace GreibachNormalFormConverter
                         // Create new productions and clean them.
                         var newProductions = initGrammar.CreateNewProductions();
 
-                        initGrammar.CleanNewProductions(newProductions);
+                        CleanNewProductions(newProductions, initGrammar);
 
                         // Substitute new productions to bring them into GNF.
                         var completeProduction = SubstituteDerivations(newProductions, initGrammar);
@@ -287,6 +287,80 @@ namespace GreibachNormalFormConverter
             }
 
             return Tuple.Create(tupleList, true);
+        }
+
+        /// <summary>
+        /// Cleans the production by removing useless rules. Variables that are useless after the removal of said rules will also be removed from the set of variables in the initial grammar.
+        /// </summary>
+        /// <param name="newProductions">The newly created productions to be cleaned.</param>
+        /// <param name="initGrammar">The inital grammar whose variables may be altered.</param>
+        private void CleanNewProductions(List<Production> newProductions, Grammar initGrammar)
+        {
+            var firstRightSymbols = new List<string>();
+            var secondRightSymbols = new List<string>();
+            var leftSymbols = new List<string>();
+
+            var removedVariableList = new List<string>();
+            var removedDerivationList = new List<string>();
+
+            // Split each derivation in each production into left side and the first and second part of the right side.
+            foreach (var production in newProductions)
+            {
+                foreach (var derivation in production.Derivations)
+                {
+                    firstRightSymbols.Add(derivation.Item2.Substring(0, 1));
+                    secondRightSymbols.Add(derivation.Item2.Substring(1));
+                    leftSymbols.Add(derivation.Item1);
+                }
+            }
+
+            firstRightSymbols = firstRightSymbols.Distinct().ToList();
+            secondRightSymbols = secondRightSymbols.Distinct().ToList();
+            leftSymbols = leftSymbols.Distinct().ToList();
+
+            // Exclude startVariable as it never occurs on the right. This behavior is intended and the derivations of the startVariable must not be removed.
+            leftSymbols.Remove(initGrammar.Startvariable.First());
+
+            // Remove derivations where the left side never occurs on any right side, thus being useless.
+            foreach (var symbol in leftSymbols)
+            {
+                if (firstRightSymbols.All(x => x != symbol) && secondRightSymbols.All(y => y != symbol))
+                {
+                    foreach (var production in newProductions.Select(x => x.Derivations))
+                    {
+                        removedVariableList.Add(symbol);
+                        var removedDerivations = production.Where(x => x.Item1 == symbol);
+                        foreach (var derivation in removedDerivations)
+                        {
+                            removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2);
+                        }
+
+                        production.RemoveAll(x => x.Item1 == symbol);
+                    }
+
+                    initGrammar.Variables.Remove(symbol);
+                }
+            }
+
+            // Remove derivations where the right side never occurs on any left side, thus being useless.
+            // The variables in question are the newly created startVariables S_X.
+            foreach (var production in newProductions.Select(x => x.Derivations))
+            {
+                var removedStartDerivations = production.Where(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
+                foreach (var derivation in removedStartDerivations)
+                {
+                    removedDerivationList.Add(derivation.Item1 + " -> " + derivation.Item2);
+                }
+
+                production.RemoveAll(x => x.Item2.Contains(initGrammar.Startvariable.First() + "_"));
+            }
+
+            removedVariableList.Add(String.Join(Environment.NewLine, initGrammar.Variables.Where(x => x.Contains(initGrammar.Startvariable.First() + "_"))));
+            initGrammar.Variables.RemoveAll(x => x.Contains(initGrammar.Startvariable.First() + "_"));
+
+            // Logging the changes
+            LogChanges(removedVariableList.Distinct().ToList(), "obsolete variables", "removed from the newly created variables");
+            LogChanges(removedDerivationList.OrderBy(x => x).ToList(), "obsolete derivations", "removed from the newly created derivations");
         }
 
         /// <summary>
