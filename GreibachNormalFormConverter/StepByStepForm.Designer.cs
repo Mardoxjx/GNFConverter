@@ -92,7 +92,7 @@
             this.Clean_btn.Name = "Clean_btn";
             this.Clean_btn.Size = new System.Drawing.Size(271, 77);
             this.Clean_btn.TabIndex = 2;
-            this.Clean_btn.Text = "clean";
+            this.Clean_btn.Text = "Clean";
             this.Clean_btn.UseVisualStyleBackColor = true;
             this.Clean_btn.Click += new System.EventHandler(this.Clean_btn_Click);
             // 
