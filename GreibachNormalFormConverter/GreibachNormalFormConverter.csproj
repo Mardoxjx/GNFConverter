@@ -95,7 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="free-convert-icon-3208-thumb.ico" />
-    <Content Include="NewHSLogo.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
