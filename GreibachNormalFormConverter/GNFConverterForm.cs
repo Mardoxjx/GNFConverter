@@ -97,11 +97,7 @@ namespace GreibachNormalFormConverter
             {
                 await Task.Run(() =>
                 {
-                    this.BeginInvoke((Action)delegate ()
-                    {
-                        var popupForm = new StepByStepForm(this, initVariables, initTerminals, initProductions, initStartVariable);
-                        popupForm.Show(this);
-                    });
+                    StepByStepExecution(initVariables, initTerminals, initProductions, initStartVariable);
                 });
             }
             else
@@ -114,11 +110,32 @@ namespace GreibachNormalFormConverter
         }
 
         /// <summary>
-        /// If Step by Step execution is not checked, the algorithm will be executed directly.
+        /// If step by step execution is checked, the algorithm willbe executed in the step by step form.
+        /// </summary>
+        /// <param name="initVariables">The variables of the given grammar</param>
+        /// <param name="initTerminals">The terminals of the given grammar</param>
+        /// <param name="initProductions">The productions of the given grammar</param>
+        /// <param name="initStartVariable">The startVariable of the given grammar</param>
+        private void StepByStepExecution(List<string> initVariables, List<string> initTerminals, List<string> initProductions, List<string> initStartVariable)
+        {
+            this.BeginInvoke((Action)delegate ()
+            {
+                var popupForm = new StepByStepForm(this, initVariables, initTerminals, initProductions, initStartVariable);
+                popupForm.Show(this);
+
+                CleanInput_btn.BeginInvoke((Action)delegate ()
+                {
+                    CleanInput_btn.Enabled = true;
+                });
+            });
+        }
+
+        /// <summary>
+        /// If step by step execution is not checked, the algorithm will be executed directly.
         /// </summary>
         /// <param name="initVariables">The variables of the given grammar</param>
         /// <param name="initTerminals">The terminals of the given </param>
-        /// <param name="initProductions">The Productions of the given </param>
+        /// <param name="initProductions">The productions of the given </param>
         /// <param name="initStartVariable">The startVariable of the given </param>
         private void DirectExecution(List<string> initVariables, List<string> initTerminals, List<string> initProductions, List<string> initStartVariable)
         {
@@ -157,13 +174,13 @@ namespace GreibachNormalFormConverter
 
                     // Display GNF grammar in the form.
                     DisplayResult(gnfGrammar);
-
-                    CleanInput_btn.BeginInvoke((Action)delegate ()
-                    {
-                        CleanInput_btn.Enabled = true;
-                    });
                 }
             }
+
+            CleanInput_btn.BeginInvoke((Action)delegate ()
+            {
+                CleanInput_btn.Enabled = true;
+            });
         }
 
         /// <summary>
@@ -228,7 +245,10 @@ namespace GreibachNormalFormConverter
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of variables/terminals.");
+                Transformation_Log.BeginInvoke((Action)delegate
+                {
+                    Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of variables/terminals.");
+                });
                 return false;
             }
 
@@ -317,7 +337,10 @@ namespace GreibachNormalFormConverter
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of productions.");
+                Transformation_Log.BeginInvoke((Action)delegate
+                {
+                    Transformation_Log.AppendText("The given grammar is not valid! There seems to be an error in the set of productions.");
+                });
                 return Tuple.Create(new List<Tuple<string, string>>(), false);
             }
 

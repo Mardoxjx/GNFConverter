@@ -44,7 +44,7 @@ namespace GreibachNormalFormConverter
             Help_btn.Enabled = true;
             CurrentStep = "Validate";
 
-            if (GNFConverter.ValidateSymbols(this.StartVariable, this.Terminals, this.StartVariable))
+            if (GNFConverter.ValidateSymbols(this.Variables, this.Terminals, this.StartVariable))
             {
                 var productionsAreValid = GNFConverter.ValidateProductions(InitProductions, Variables, Terminals);
 
@@ -55,10 +55,18 @@ namespace GreibachNormalFormConverter
 
                     Transformation_Log.Text = "The given grammar is valid. You may continue. For more detailed Information use the button below or check the transformation_log box after you are done.";
                 }
-            }
+                else
+                {
+                    this.Close();
+                }
 
-            Validation_btn.Enabled = false;
-            Creation_btn.Enabled = true;
+                Validation_btn.Enabled = false;
+                Creation_btn.Enabled = true;
+            }
+            else
+            {
+                this.Close();
+            }
         }
 
         private void Creation_btn_Click(object sender, EventArgs e)
