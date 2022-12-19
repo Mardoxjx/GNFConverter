@@ -39,6 +39,11 @@ namespace GreibachNormalFormConverter
             Help_btn.Enabled = false;
         }
 
+        /// <summary>
+        /// Executes only the validation part of the algorithm.
+        /// The popup closes if the validation fails.
+        /// If the validation is successfull the creation button is activated.
+        /// </summary>
         private void Validation_btn_Click(object sender, EventArgs e)
         {
             Help_btn.Enabled = true;
@@ -69,6 +74,10 @@ namespace GreibachNormalFormConverter
             }
         }
 
+        /// <summary>
+        /// Executes only the creation part of the algorithm.
+        /// After executing, the clean button is activated.
+        /// </summary>
         private void Creation_btn_Click(object sender, EventArgs e)
         {
             CurrentStep = "Create";
@@ -81,6 +90,10 @@ namespace GreibachNormalFormConverter
             Clean_btn.Enabled = true;
         }
 
+        /// <summary>
+        /// Executes only the clean part of the algorithm.
+        /// After executing, the substitute button is activated.
+        /// </summary>
         private void Clean_btn_Click(object sender, EventArgs e)
         {
             CurrentStep = "Clean";
@@ -93,6 +106,10 @@ namespace GreibachNormalFormConverter
             Substitute_btn.Enabled = true;
         }
 
+        /// <summary>
+        /// Executes only the substitute part of the algorithm.
+        /// After executing, the finish button is activated.
+        /// </summary>
         private void Substitute_btn_Click(object sender, EventArgs e)
         {
             CurrentStep = "Substitute";
@@ -106,6 +123,9 @@ namespace GreibachNormalFormConverter
             Finish_btn.Enabled = true;
         }
 
+        /// <summary>
+        /// Provides additional info the the current step if clicked.
+        /// </summary>
         private void Help_btn_Click(object sender, EventArgs e)
         {
             switch (CurrentStep)
@@ -136,6 +156,9 @@ namespace GreibachNormalFormConverter
             }
         }
 
+        /// <summary>
+        /// Finishes the execution of the algorithm and closes the popup.
+        /// </summary>
         private void Finish_btn_Click(object sender, EventArgs e)
         {
             Grammar.Production = FinalProduction;
@@ -150,6 +173,9 @@ namespace GreibachNormalFormConverter
             this.Close();
         }
 
+        /// <summary>
+        /// Stops the step by step execution and closes the popup.
+        /// </summary>
         private void Cancel_btn_Click(object sender, EventArgs e)
         {
             GNFConverter.Transformation_Log.Text = "The step by step execution was canceled!";
