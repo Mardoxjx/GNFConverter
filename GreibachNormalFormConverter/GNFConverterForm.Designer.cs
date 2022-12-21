@@ -61,7 +61,7 @@
             // 
             this.exp_label.Location = new System.Drawing.Point(13, 13);
             this.exp_label.Name = "exp_label";
-            this.exp_label.Size = new System.Drawing.Size(801, 115);
+            this.exp_label.Size = new System.Drawing.Size(1072, 115);
             this.exp_label.TabIndex = 0;
             this.exp_label.Text = resources.GetString("exp_label.Text");
             // 
@@ -232,12 +232,12 @@
             // 
             // Transformation_Log
             // 
-            this.Transformation_Log.Location = new System.Drawing.Point(951, 13);
+            this.Transformation_Log.Location = new System.Drawing.Point(1063, 10);
             this.Transformation_Log.Multiline = true;
             this.Transformation_Log.Name = "Transformation_Log";
             this.Transformation_Log.ReadOnly = true;
             this.Transformation_Log.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Transformation_Log.Size = new System.Drawing.Size(1142, 1187);
+            this.Transformation_Log.Size = new System.Drawing.Size(1133, 1233);
             this.Transformation_Log.TabIndex = 21;
             // 
             // ComboBox
