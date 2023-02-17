@@ -161,6 +161,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "StepByStepForm";
             this.Text = "StepByStepForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StepByStepForm_FormClosing);
             this.StepByStep_groupBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

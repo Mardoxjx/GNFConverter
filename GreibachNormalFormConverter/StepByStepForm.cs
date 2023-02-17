@@ -16,6 +16,8 @@ namespace GreibachNormalFormConverter
         public Production FinalProduction { get; set; }
         public string CurrentStep { get; set; }
 
+        public bool Finished = false;
+
         public StepByStepForm(
             GNFConverter gnfConverter,
             List<string> initVariables,
@@ -139,11 +141,11 @@ namespace GreibachNormalFormConverter
                         "1. Every rule A -> BC creates a new rule B_X -> CA_X." + Environment.NewLine +
                         "2. Every rule X -> BC also creates a new rule B_X -> C." + Environment.NewLine +
                         "3. Every rule A -> a creates a new rule X -> aA_X." + Environment.NewLine +
-                        "4. Every rule X -> a is added to the new set of productions.", "Create");
+                        "4. If A=X for A -> a, no new rule is created and X -> a is added to the new set of productions.", "Create");
                     break;
                 case "Clean":
                     MessageBox.Show("During this step the tool will remove all unnecessary derivations from the newly created derivations in the prior step." + Environment.NewLine +
-                        "This concerns all derivations that contain symbols that only ever occur on either the left or the right side. They will be removed as the will never be able to produce anything.", "Clean");
+                        "This concerns all derivations that contain symbols that only ever occur on either the left or the right side. They will be removed as they will never be able to produce anything.", "Clean");
                     break;
                 case "Substitute":
                     MessageBox.Show("As of right now, there are still derivations that are not in GNF." + Environment.NewLine +
@@ -169,6 +171,7 @@ namespace GreibachNormalFormConverter
             + "You can see the complete grammar in the textboxes on the left!");
 
             GNFConverter.CleanInput_btn.Enabled = true;
+            Finished = true;
 
             this.Close();
         }
@@ -178,17 +181,20 @@ namespace GreibachNormalFormConverter
         /// </summary>
         private void Cancel_btn_Click(object sender, EventArgs e)
         {
-            GNFConverter.Transformation_Log.Text = "The step by step execution was canceled!";
             this.Close();
+        }
 
-            GNFConverter.V_txt.Text = "";
-            GNFConverter.Sig_txt.Text = "";
-            GNFConverter.P_txt.Text = "";
-            GNFConverter.S_txt.Text = "";
-            GNFConverter.Result_V_txt.Text = "";
-            GNFConverter.Result_Sig_txt.Text = "";
-            GNFConverter.Result_P_txt.Text = "";
-            GNFConverter.Result_S_txt.Text = "";
+        private void StepByStepForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!Finished)
+            {
+                GNFConverter.Transformation_Log.Text = "The step by step execution was canceled!";
+
+                GNFConverter.Result_V_txt.Text = "";
+                GNFConverter.Result_Sig_txt.Text = "";
+                GNFConverter.Result_P_txt.Text = "";
+                GNFConverter.Result_S_txt.Text = ""; 
+            }
         }
     }
 }
