@@ -16,7 +16,7 @@ namespace GreibachNormalFormConverter
         public Production FinalProduction { get; set; }
         public string CurrentStep { get; set; }
 
-        public bool Finished = false;
+        private bool Finished = false;
 
         public StepByStepForm(
             GNFConverter gnfConverter,

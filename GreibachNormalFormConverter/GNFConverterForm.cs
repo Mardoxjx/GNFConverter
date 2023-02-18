@@ -10,6 +10,9 @@ namespace GreibachNormalFormConverter
 {
     public partial class GNFConverter : Form
     {
+        private delegate void SetLogCallback(List<string> changes, string nameOfChange, string kindOfChange);
+        private delegate void SetResultCallback(Grammar gnfGrammar);
+
         public GNFConverter()
         {
             InitializeComponent();
@@ -256,7 +259,7 @@ namespace GreibachNormalFormConverter
 
         /// <summary>
         /// Validates the productions of the grammar.
-        /// The productions are to be of the form A -> x;A -> y;B -> z.
+        /// The productions are to be of the form A -> BC;A -> y;B -> z etc.
         /// </summary>
         /// <param name="productions">The productions to be validated.</param>
         /// <param name="variables">The set of variables which is used for validation of the productions.</param>
@@ -547,8 +550,6 @@ namespace GreibachNormalFormConverter
                 }
             }
 
-            removedVariableList.Add(String.Join(Environment.NewLine, initGrammar.Variables.Where(x => x.Contains(initGrammar.Startvariable.First() + "_"))));
-
             // Logging the changes
             LogChanges(removedVariableList.Distinct().ToList(), "obsolete variables", "removed from the newly created variables");
             LogChanges(removedDerivationList.OrderBy(x => x).ToList(), "obsolete derivations", "removed from the newly created derivations");
@@ -634,8 +635,6 @@ namespace GreibachNormalFormConverter
             return new Production(substitutedProductions);
         }
 
-        private delegate void SetResultCallback(Grammar gnfGrammar);
-
         /// <summary>
         /// Formats the variable, terminal, production and startvariable sets into strings and displays them in the dedicated textboxes on the UI.
         /// </summary>
@@ -705,8 +704,6 @@ namespace GreibachNormalFormConverter
                 Result_S_txt.Text = String.Join(Environment.NewLine, gnfGrammar.Startvariable);
             }
         }
-
-        private delegate void SetLogCallback(List<string> changes, string nameOfChange, string kindOfChange);
 
         /// <summary>
         /// A somewhat generic method to log changes to the transformation log.
